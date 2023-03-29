@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">CheckSensorAvailability</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="heart_rate">42 bpm</string>
+</resources>
