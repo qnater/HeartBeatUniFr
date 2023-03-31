@@ -9,7 +9,7 @@
     tools:deviceIds="wear">
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/imgBackground"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:src="@drawable/relax"
@@ -29,7 +29,7 @@
             android:visibility="visible">
 
             <TextView
-                android:id="@+id/text_HEART_RATE"
+                android:id="@+id/tbxHeartRate"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:fontFamily="casual"
