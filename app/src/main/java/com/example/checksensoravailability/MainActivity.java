@@ -5,6 +5,8 @@ import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -16,14 +18,15 @@ import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Vibrator;
+import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -46,6 +49,7 @@ public class MainActivity extends Activity implements SensorEventListener
 {
     private TextView tbxHeartRate;
     private ImageView imgView;
+    private ImageView imgSphinx;
     private Boolean createFile = true;
 
     private int i = 0;
@@ -53,12 +57,16 @@ public class MainActivity extends Activity implements SensorEventListener
     private ActivityMainBinding binding;
     private static final String TAG = "____Main___";
 
+    protected static final int RESULT_SPEECH = 1;
+
     // =====================================================================
     // Initializing all variables..
     private ImageView imgMic;
 
     private Boolean mode = true;
     private int start = 0;
+
+    private Boolean deadLock = false;
 
     // creating a variable for media recorder object class.
     private MediaRecorder mRecorder;
@@ -72,6 +80,9 @@ public class MainActivity extends Activity implements SensorEventListener
     // constant for storing audio permission
     public static final int REQUEST_AUDIO_PERMISSION_CODE = 1;
 
+    MediaPlayer mediaPlayer;
+
+
 
 
     @Override
@@ -79,12 +90,15 @@ public class MainActivity extends Activity implements SensorEventListener
     {
         super.onCreate(savedInstanceState);
 
-        binding = ActivityMainBinding.inflate(getLayoutInflater()); // binder for framelayout
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.dcl);
+
         setContentView(binding.getRoot());
 
         tbxHeartRate = binding.tbxHeartRate;
         imgView = binding.imgBackground;
         imgMic = binding.imgMic;
+        imgSphinx = binding.imgSphinx;
 
         checkPermission();
         checkSensorAvailability();
@@ -117,7 +131,118 @@ public class MainActivity extends Activity implements SensorEventListener
             }
         });
 
+        imgSphinx.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                sphynxCall();
+            }
+        });
+
     }
+
+
+    private void sphynxCall()
+    {
+        deadLock = false;
+
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, "en-US");
+
+        try
+        {
+            startActivityForResult(intent, RESULT_SPEECH);
+        }
+        catch (ActivityNotFoundException e)
+        {
+            Toast.makeText(getApplicationContext(), "Your device doesn't support Speach to Text", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
+
+        deadLock = true;
+
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch (requestCode)
+        {
+            case RESULT_SPEECH:
+                if(resultCode == RESULT_OK && data != null)
+                {
+                    ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+                    String userCommand = text.get(0);
+                    Log.d(TAG, "Sphynx get : " + userCommand);
+
+
+                    if (userCommand.contains("relax"))
+                    {
+                        relaxationMethod(1);
+                    }
+                    else if (userCommand.contains("motivation"))
+                    {
+                        relaxationMethod(2);
+                    }
+                    else if (userCommand.contains("stop"))
+                    {
+                        relaxationMethod(0);
+                    }
+                    else if (userCommand.contains("victory"))
+                    {
+                        relaxationMethod(3);
+                    }
+                    else
+                    {
+                        Log.d(TAG, "Pattern not understood... Sorry bro...");
+                    }
+                }
+                break;
+        }
+
+    }
+
+    private void relaxationMethod(int played)
+    {
+        switch (played)
+        {
+            case 1:
+                if(mediaPlayer.isPlaying())
+                {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.dcl);
+                mediaPlayer.start();
+            break;
+            case 2:
+                if(mediaPlayer.isPlaying())
+                {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.op);
+                mediaPlayer.start();
+            break;
+            case 3:
+                if(mediaPlayer.isPlaying())
+                {
+                    mediaPlayer.stop();
+                }
+                mediaPlayer = MediaPlayer.create(getApplicationContext(), R.raw.bip);
+                mediaPlayer.start();
+                break;
+            default:
+                if(mediaPlayer.isPlaying())
+                {
+                    mediaPlayer.stop();
+                }
+            break;
+        }
+    }
+
 
     private void checkPermission()
     {
@@ -162,14 +287,12 @@ public class MainActivity extends Activity implements SensorEventListener
                 Drawable drawable = getDrawable(R.drawable.relax);
                 imgView.setImageDrawable(drawable);
                 tbxHeartRate.setTextColor(Color.BLACK);
-
             }
             else if (heatBeat > 80 && heatBeat < 100)
             {
                 Drawable drawable = getDrawable(R.drawable.embarassed);
                 imgView.setImageDrawable(drawable);
                 tbxHeartRate.setTextColor(Color.WHITE);
-
             }
             else
             {
@@ -177,6 +300,9 @@ public class MainActivity extends Activity implements SensorEventListener
                 imgView.setImageDrawable(drawable);
                 tbxHeartRate.setTextColor(Color.YELLOW);
 
+                Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
+                long[] vibrationPattern = {0, 500, 50, 300};
+                vibrator.vibrate(vibrationPattern, -1);
             }
             String msg = "" + heatBeat;
 
@@ -296,12 +422,6 @@ public class MainActivity extends Activity implements SensorEventListener
 
     public void pauseRecording()
     {
-         /*
-        stopTV.setBackgroundColor(getResources().getColor(R.color.gray));
-        startTV.setBackgroundColor(getResources().getColor(R.color.purple_200));
-        playTV.setBackgroundColor(getResources().getColor(R.color.purple_200));
-        stopplayTV.setBackgroundColor(getResources().getColor(R.color.purple_200));
-        */
         // below method will stop
         // the audio recording.
         mRecorder.stop();
@@ -315,7 +435,8 @@ public class MainActivity extends Activity implements SensorEventListener
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
         // this method is called when user will
         // grant the permission for audio recording.
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -334,14 +455,16 @@ public class MainActivity extends Activity implements SensorEventListener
         }
     }
 
-    public boolean CheckPermissions() {
+    public boolean CheckPermissions()
+    {
         // this method is used to check permission
         int result = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
         int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), RECORD_AUDIO);
         return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void RequestPermissions() {
+    private void RequestPermissions()
+    {
         // this method is used to request the
         // permission for audio recording and storage.
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{RECORD_AUDIO, WRITE_EXTERNAL_STORAGE}, REQUEST_AUDIO_PERMISSION_CODE);

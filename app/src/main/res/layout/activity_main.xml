@@ -50,10 +50,19 @@
             android:id="@+id/imgMic"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_gravity="bottom|center"
+            android:layout_gravity="bottom|left"
             android:adjustViewBounds="false"
             android:cropToPadding="true"
             android:src="@drawable/open_mic" />
+
+        <ImageView
+            android:id="@+id/imgSphinx"
+            android:layout_width="35dp"
+            android:layout_height="35dp"
+            android:layout_gravity="bottom|right"
+            android:adjustViewBounds="false"
+            android:cropToPadding="true"
+            android:src="@drawable/sphinx" />
 
 
     </FrameLayout>
