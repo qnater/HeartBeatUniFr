@@ -1,0 +1,91 @@
+#### First code found ####
+
+
+// Import the required classes
+import jhrv.analysis.HRVAnalysis;
+import jhrv.analysis.ManualDetectRPeaks;
+import jhrv.analysis.RRIntervalAnalysis;
+import jhrv.filter.NonLinearFilters;
+
+import jhrv.signal.QRSFinder;
+import jhrv.signal.RPeakDetect;
+
+// Load your heart rate data
+double[] heartRateData = {100, 120, 80, 90, 100, 110, 95, 85, 120, 110};
+
+// Preprocess the heart rate data
+QRSFinder detector = new RPeakDetect();
+double[] rPeaks = detector.getRPeaks(heartRateData);
+
+NonLinearFilters filters = new NonLinearFilters();
+rPeaks = filters.medianFilter(rPeaks, 5);
+
+ManualDetectRPeaks manualDetector = new ManualDetectRPeaks(rPeaks);
+double[] rrIntervals = manualDetector.getRRIntervals(heartRateData);
+
+// Analyze the heart rate variability
+RRIntervalAnalysis rrAnalysis = new RRIntervalAnalysis(rrIntervals);
+rrAnalysis.interpolateNNIntervals(4);
+rrAnalysis.removeOutliers();
+rrAnalysis.interpolateNNIntervals(4);
+
+HRVAnalysis hrvAnalysis = new HRVAnalysis(rrAnalysis);
+hrvAnalysis.setTimeDomain();
+hrvAnalysis.setFrequencyDomain();
+hrvAnalysis.setNonLinear();
+
+// Print the results
+System.out.println("SDNN: " + hrvAnalysis.getValueHRV(HRVAnalysis.SDNN));
+System.out.println("RMSSD: " + hrvAnalysis.getValueHRV(HRVAnalysis.RMSSD));
+System.out.println("LF power: " + hrvAnalysis.getValueHRV(HRVAnalysis.LF_POWER));
+System.out.println("HF power: " + hrvAnalysis.getValueHRV(HRVAnalysis.HF_POWER));
+System.out.println("SD1: " + hrvAnalysis.getValueHRV(HRVAnalysis.SD1));
+System.out.println("SD2: " + hrvAnalysis.getValueHRV(HRVAnalysis.SD2));
+
+
+#### Second code found ####
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+public class PNNxCompilation {
+    public static void main(String[] args) {
+        try {
+            // Step 1: Download pNNx.src.tar.gz
+            Process downloadProcess = Runtime.getRuntime().exec("wget https://physionet.org/physiotools/physiotools-2022-02-17.tar.gz");
+            downloadProcess.waitFor();
+
+            // Step 2: Unpack pNNx.src.tar.gz
+            Process unpackProcess = Runtime.getRuntime().exec("tar xfvz physiotools-2022-02-17.tar.gz");
+            unpackProcess.waitFor();
+
+            // Step 3: Enter the source directory
+            Process cdProcess = Runtime.getRuntime().exec("cd physiotools-2022-02-17/pNNx/src");
+            cdProcess.waitFor();
+
+            // Step 4: Compile the software
+            Process compileProcess = Runtime.getRuntime().exec("make");
+            compileProcess.waitFor();
+
+            // Step 5: Check the output of the compilation process
+            BufferedReader compileOutput = new BufferedReader(new InputStreamReader(compileProcess.getInputStream()));
+            String line;
+            while ((line = compileOutput.readLine()) != null) {
+                System.out.println(line);
+            }
+
+            // Step 6: Check for any errors in the compilation process
+            BufferedReader compileError = new BufferedReader(new InputStreamReader(compileProcess.getErrorStream()));
+            while ((line = compileError.readLine()) != null) {
+                System.err.println(line);
+            }
+
+            // Step 7: Close the BufferedReader
+            compileOutput.close();
+            compileError.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
