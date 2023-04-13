@@ -21,48 +21,44 @@
         android:padding="@dimen/inner_frame_layout_padding"
         app:layout_boxedEdges="all">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:layout_gravity="bottom|center"
-            android:orientation="horizontal"
-            android:visibility="visible">
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:background="#50999999">
+
+            <ImageView
+                android:id="@+id/imgSphinx"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom|right"
+                android:adjustViewBounds="false"
+                android:cropToPadding="true"
+                android:src="@drawable/sphinx" />
 
             <TextView
                 android:id="@+id/tbxHeartRate"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="bottom|clip_horizontal|center|center_vertical"
-                android:layout_marginBottom="15dp"
                 android:fontFamily="casual"
                 android:lineSpacingExtra="8sp"
-                android:text="82 bpm"
+                android:text="100Amp"
                 android:textAlignment="center"
-                android:textAppearance="@android:style/TextAppearance.Material.Large"
                 android:textColor="#000000"
-                android:textSize="34sp"
+                android:textSize="21sp"
                 android:textStyle="bold" />
 
+            <ImageView
+                android:id="@+id/imgMic"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_gravity="bottom|left"
+                android:adjustViewBounds="false"
+                android:cropToPadding="true"
+                android:src="@drawable/open_mic" />
 
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/imgMic"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="bottom|left"
-            android:adjustViewBounds="false"
-            android:cropToPadding="true"
-            android:src="@drawable/open_mic" />
-
-        <ImageView
-            android:id="@+id/imgSphinx"
-            android:layout_width="35dp"
-            android:layout_height="35dp"
-            android:layout_gravity="bottom|right"
-            android:adjustViewBounds="false"
-            android:cropToPadding="true"
-            android:src="@drawable/sphinx" />
+        </TableRow>
 
 
     </FrameLayout>

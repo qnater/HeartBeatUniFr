@@ -2,13 +2,32 @@
 buildscript {
     repositories {
         google()
+
+        mavenLocal()
+        maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+
+        maven {
+            name = "TarsosDSP repository"
+            url = "https://mvn.0110.be/releases"
+        }
+
         mavenCentral()
     }
     dependencies {
+
         classpath "com.android.tools.build:gradle:7.0.4"
+
+        classpath group: 'edu.cmu.sphinx', name: 'sphinx4-core', version:'5prealpha-SNAPSHOT'
+        classpath group: 'edu.cmu.sphinx', name: 'sphinx4-data', version:'5prealpha-SNAPSHOT'
+
+        classpath 'be.tarsos.dsp:core:2.5'
+        classpath 'be.tarsos.dsp:jvm:2.5'
+
+
 
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
+
     }
 }
 
