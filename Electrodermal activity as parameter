@@ -1,0 +1,36 @@
+### Electrodermal activity ###
+### Biolib-java: code ###
+
+import edu.ucsd.sccn.LSL;
+import edu.ucsd.sccn.SensorData;
+
+public class GSRDataProcessor {
+    public static void main(String[] args) {
+        // Initialize LSL library
+        LSL.initialize();
+
+        // Create a data reader
+        LSL.StreamInfo streamInfo = new LSL.StreamInfo("GSRData", "GSR", 1, LSL.IRREGULAR_RATE, LSL.ChannelFormat.float32, "GSR-StreamID");
+        LSL.StreamInlet inlet = new LSL.StreamInlet(streamInfo);
+
+        // Read GSR data
+        while (true) {
+            // Get the latest sample
+            float[] sample = new float[1];
+            inlet.pull_sample(sample);
+
+            // Process the GSR data
+            float gsrValue = sample[0];
+            System.out.println("GSR Value: " + gsrValue);
+
+            // Add your own processing logic here
+
+            // Sleep for a while before reading the next sample
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+}
