@@ -43,7 +43,8 @@ System.out.println("SD1: " + hrvAnalysis.getValueHRV(HRVAnalysis.SD1));
 System.out.println("SD2: " + hrvAnalysis.getValueHRV(HRVAnalysis.SD2));
 
 
-#### Second code found ####
+#### Second code found #### 
+# link : https://physionet.org/content/pnnx/1.0.0/
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -89,3 +90,37 @@ public class PNNxCompilation {
         }
     }
 }
+
+
+### Third code ###
+# Source : HeartPy
+
+import jseeg.EEGAnalysis;
+import jseeg.EEGSignal;
+import jseeg.HeartExcitability;
+
+public class HeartExcitabilityExample {
+
+    public static void main(String[] args) {
+        // Load ECG signal data
+        double[] ecgData = { /* ECG signal data goes here */ };
+
+        // Create an EEGSignal object
+        EEGSignal ecgSignal = new EEGSignal(ecgData);
+
+        // Perform heart excitability analysis
+        HeartExcitability heartExcitability = EEGAnalysis.computeHeartExcitability(ecgSignal);
+
+        // Get heart excitability parameters
+        double qrsDuration = heartExcitability.getQRSDuration();
+        double qtcInterval = heartExcitability.getQTCInterval();
+        double heartRate = heartExcitability.getHeartRate();
+
+        // Print heart excitability parameters
+        System.out.println("QRS Duration: " + qrsDuration + " ms");
+        System.out.println("QTC Interval: " + qtcInterval + " ms");
+        System.out.println("Heart Rate: " + heartRate + " bpm");
+    }
+
+}
+
