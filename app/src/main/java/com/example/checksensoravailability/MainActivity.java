@@ -14,7 +14,6 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaMetadataRetriever;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Bundle;
@@ -33,12 +32,10 @@ import androidx.core.content.ContextCompat;
 
 import com.example.checksensoravailability.databinding.ActivityMainBinding;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -55,7 +52,8 @@ import be.tarsos.dsp.pitch.PitchProcessor.PitchEstimationAlgorithm;
 import be.tarsos.dsp.util.fft.FFT;
 
 
-public class MainActivity extends Activity implements SensorEventListener {
+public class MainActivity extends Activity implements SensorEventListener
+{
     private TextView tbxHeartRate;
 
     private ImageView imgView;
@@ -74,10 +72,10 @@ public class MainActivity extends Activity implements SensorEventListener {
     private ImageView imgMic;
 
     private Boolean mode = true;
-    private int start = 0;
 
     private Boolean deadLock = false;
     private int state = 0;
+    private Boolean picState = true;
 
     // creating a variable for media recorder object class.
     private MediaRecorder mRecorder;
@@ -88,18 +86,33 @@ public class MainActivity extends Activity implements SensorEventListener {
     // string variable is created for storing a file name
     private static String mFileName = null;
     private static String mFileNameSound = null;
-    private static String mFileNameScript = null;
-    private String pitch = "";
-    private String amplitude = "";
+
+    private float pitch = 0;
+    private float amplitude = 0;
+    private float pitchProbability = 0;
+
+    private int auc = 0;
+
 
     // constant for storing audio permission
     public static final int REQUEST_AUDIO_PERMISSION_CODE = 1;
+
+    public static final int calmnessHeartBeat = 80;
+    public static final int angerHeartBeat = 100;
+
+    public static final int calmnessPitch = 132;
+    public static final int angerPitch = 200;
+
+    public static final int calmnessAmplitude = 40;
+    public static final int angerAmplitude = 50;
+
 
     MediaPlayer mediaPlayer;
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
 
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -123,11 +136,23 @@ public class MainActivity extends Activity implements SensorEventListener {
            @Override
            public void onClick(View v)
            {
-               if(state!=2)
+               if(state!=3)
                    state = state + 1;
                else
                    state = 0;
            }
+
+
+        });
+
+        imgView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view)
+            {
+                picState = !picState;
+                return false;
+            }
+
         });
 
 
@@ -154,7 +179,8 @@ public class MainActivity extends Activity implements SensorEventListener {
             }
         });
 
-        imgSphinx.setOnClickListener(new View.OnClickListener() {
+        imgSphinx.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View v) {
                 sphynxCall();
@@ -164,7 +190,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
 
-    private void sphynxCall() {
+    private void sphynxCall()
+    {
         deadLock = false;
 
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
@@ -183,7 +210,8 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
         super.onActivityResult(requestCode, resultCode, data);
 
         switch (requestCode) {
@@ -212,7 +240,8 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     }
 
-    private void relaxationMethod(int played) {
+    private void relaxationMethod(int played)
+    {
         switch (played) {
             case 1:
                 if (mediaPlayer.isPlaying()) {
@@ -244,26 +273,31 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
 
-    private void checkPermission() {
+    private void checkPermission()
+    {
         // Runtime permission ------------
-        if (checkSelfPermission(Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED) {
+        if (checkSelfPermission(Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED)
+        {
             requestPermissions(new String[]{Manifest.permission.BODY_SENSORS}, 1);
-        } else {
+        }
+        else
+        {
             Log.d(TAG, "ALREADY GRANTED");
         }
     }
 
 
-    private void checkSensorAvailability() {
+    private void checkSensorAvailability()
+    {
         SensorManager mSensorManager = ((SensorManager) getSystemService(SENSOR_SERVICE));
 
         //List of integrated sensor of device---------
         List<Sensor> sensors = mSensorManager.getSensorList(Sensor.TYPE_ALL);
         ArrayList<String> arrayList = new ArrayList<String>();
-        for (Sensor sensor : sensors) {
+        for (Sensor sensor : sensors)
+        {
             arrayList.add(sensor.getName());
         }
-        Log.d(TAG, " " + arrayList);
 
         Sensor mHeartRateSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
         mSensorManager.registerListener(this, mHeartRateSensor, SensorManager.SENSOR_DELAY_NORMAL);
@@ -272,77 +306,118 @@ public class MainActivity extends Activity implements SensorEventListener {
 
     public void onSensorChanged(SensorEvent event)
     {
-
-        if (event.sensor.getType() == Sensor.TYPE_HEART_RATE) {
+        if (event.sensor.getType() == Sensor.TYPE_HEART_RATE)
+        {
             int heatBeat = (int) event.values[0];
+            Drawable drawable;
+            String level = "";
 
-            if (heatBeat < 80) {
-                Drawable drawable = getDrawable(R.drawable.relax);
+            if (heatBeat < calmnessHeartBeat && pitch < calmnessPitch && amplitude < calmnessAmplitude)  // Erishkigal
+            {
+                level = "calm";
+
+                if(picState)
+                    drawable = getDrawable(R.drawable.relax);
+                else
+                    drawable = getDrawable(R.drawable.offifical_calmness);
 
                 imgView.setImageDrawable(drawable);
-
 
                 tbxHeartRate.setTextColor(Color.BLACK);
 
+                auc = asses_result(heatBeat, pitch, amplitude, level);
+
                 if(state == 1)
-                    tbxHeartRate.setText(pitch + "Hz");
+                    tbxHeartRate.setText((int)pitch + "Hz");
                 else if(state == 2)
-                    tbxHeartRate.setText(amplitude + "Amp");
-
-
+                    tbxHeartRate.setText((int)amplitude + "amp");
+                else if(state == 3)
+                    tbxHeartRate.setText(auc + "%");
             }
-            else if (heatBeat > 80 && heatBeat < 100)
+            else if (heatBeat >= angerHeartBeat && pitch >= angerPitch && amplitude >= angerAmplitude)  // Eriri
             {
-                Drawable drawable = getDrawable(R.drawable.embarassed);
+                level = "anger";
+
+                if(picState)
+                    drawable = getDrawable(R.drawable.anger);
+                else
+                    drawable = getDrawable(R.drawable.offifical_anger);
 
                 imgView.setImageDrawable(drawable);
 
-                tbxHeartRate.setTextColor(Color.WHITE);
+                tbxHeartRate.setTextColor(Color.BLACK);
+
+                auc = asses_result(heatBeat, pitch, amplitude, level);
 
                 if(state == 1)
-                    tbxHeartRate.setText(pitch + " Hz");
+                    tbxHeartRate.setText((int)pitch + "Hz");
                 else if(state == 2)
-                    tbxHeartRate.setText(amplitude + " Amp");
-            }
-            else
-            {
-                Drawable drawable = getDrawable(R.drawable.angry);
-                imgView.setImageDrawable(drawable);
-
-                tbxHeartRate.setTextColor(Color.YELLOW);
-
-                if(state == 1)
-                    tbxHeartRate.setText(pitch + " Hz");
-                else if(state == 2)
-                    tbxHeartRate.setText(amplitude + " Amp");
+                    tbxHeartRate.setText((int)amplitude + "amp");
+                else if(state == 3)
+                    tbxHeartRate.setText(auc + "%");
 
                 Vibrator vibrator = (Vibrator) getSystemService(VIBRATOR_SERVICE);
                 long[] vibrationPattern = {0, 500, 50, 300};
                 vibrator.vibrate(vibrationPattern, -1);
             }
+            else // Tohsaka
+           // else if ((heatBeat >= calmnessHeartBeat && heatBeat < angerHeartBeat) || (pitch >= calmnessPitch && pitch < angerPitch) || (amplitude >= calmnessAmplitude && amplitude < angerAmplitude))
+            {
+                level = "stress";
+
+                if(picState)
+                    drawable = getDrawable(R.drawable.embarassed);
+                else
+                    drawable = getDrawable(R.drawable.offifical_stress);
+
+                imgView.setImageDrawable(drawable);
+
+                tbxHeartRate.setTextColor(Color.WHITE);
+
+                auc = asses_result(heatBeat, pitch, amplitude, level);
+
+                if(state == 1)
+                    tbxHeartRate.setText((int)pitch + "Hz");
+                else if(state == 2)
+                    tbxHeartRate.setText((int)amplitude + "amp");
+                else if(state == 3)
+                    tbxHeartRate.setText(auc + "%");
+            }
+
             String msg = "" + heatBeat;
+
+            float noise = ((1-pitchProbability)*100);
+
+            System.out.println("Sensors Features - Heart Beats : \t" + heatBeat + " bpms");
+            System.out.println("Prosody Features - Pitch in Hz : \t" + pitch + " Hz");
+            System.out.println("Prosody Features - Amplitudes  : \t" + amplitude + " dBm");
+            System.out.println("Prosody Features - Noise       : \t" + noise + "%");
+            System.out.println("Multimodal value - LEVEL       : \t" + level);
+            System.out.println("Multimodal value - AUC         : \t" + auc + "%");
 
             if(state == 0)
                 tbxHeartRate.setText(msg + "bpm");
 
-            Log.d(TAG, msg);
-
-            writeDataset(heatBeat);
+            writeDataset(heatBeat, pitch, amplitude, auc, noise, level);
         }
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    public void onAccuracyChanged(Sensor sensor, int accuracy)
+    {
         Log.d(TAG, "onAccuracyChanged - accuracy: " + accuracy);
     }
 
-    private void writeDataset(int heatBeat) {
-        try {
+    private void writeDataset(int heatBeat, float pitch, float amplitude, int auc, float noise, String level)
+    {
+        try
+        {
             File extDir = Environment.getExternalStorageDirectory();
             String filename = "heartbeat_data_set.csv";
             File fullFilename = new File(extDir, filename);
 
-            if (createFile && i == 0) {
+            if (createFile && i == 0)
+            {
                 fullFilename.delete();
                 fullFilename.createNewFile();
                 fullFilename.setWritable(Boolean.TRUE);
@@ -359,8 +434,9 @@ public class MainActivity extends Activity implements SensorEventListener {
             String timestamp = now.format(formatter);
 
             // write the timestamp and value to the file
-            bufferedWriter.write(timestamp + "," + heatBeat);
-            Log.d(TAG, "timestamp : " + timestamp + ", " + heatBeat);
+            bufferedWriter.write(timestamp + "," + level + "," + heatBeat + "bpms," + pitch + "Hz," + amplitude + "dBm," + noise + "%," + auc + "%");
+            Log.d(TAG, "timestamp , level, heatBeat, pitch, noise, auc, amplitude");
+            Log.d(TAG, "" + timestamp + "," + level + "," + heatBeat + "bpms," + pitch + "Hz," + amplitude + "dBm," +  noise + "%," + auc + "%");
             bufferedWriter.newLine();
 
             // close the buffered writer
@@ -373,11 +449,13 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
 
-    private void startRecording() {
+    private void startRecording()
+    {
         // check permission method is used to check
         // that the user has granted permission
         // to record and store the audio.
-        if (CheckPermissions()) {
+        if (CheckPermissions())
+        {
             // we are here initializing our filename variable
             // with the path of the recorded audio file.
             mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -445,18 +523,24 @@ public class MainActivity extends Activity implements SensorEventListener {
 
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+    {
         // this method is called when user will
         // grant the permission for audio recording.
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode) {
+        switch (requestCode)
+        {
             case REQUEST_AUDIO_PERMISSION_CODE:
-                if (grantResults.length > 0) {
+                if (grantResults.length > 0)
+                {
                     boolean permissionToRecord = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     boolean permissionToStore = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    if (permissionToRecord && permissionToStore) {
+                    if (permissionToRecord && permissionToStore)
+                    {
                         Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_LONG).show();
-                    } else {
+                    }
+                    else
+                    {
                         Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_LONG).show();
                     }
                 }
@@ -464,14 +548,16 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
     }
 
-    public boolean CheckPermissions() {
+    public boolean CheckPermissions()
+    {
         // this method is used to check permission
         int result = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
         int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), RECORD_AUDIO);
         return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
     }
 
-    private void RequestPermissions() {
+    private void RequestPermissions()
+    {
         // this method is used to request the
         // permission for audio recording and storage.
         ActivityCompat.requestPermissions(MainActivity.this, new String[]{RECORD_AUDIO, WRITE_EXTERNAL_STORAGE}, REQUEST_AUDIO_PERMISSION_CODE);
@@ -492,8 +578,10 @@ public class MainActivity extends Activity implements SensorEventListener {
             public void handlePitch(PitchDetectionResult res, AudioEvent e)
             {
                 final float pitchInHz = res.getPitch();
+                final float pitchNoise = res.getProbability();
                 final float[] amp = {0};
                 final float[] amplitudes = new float[e.getBufferSize()];
+
 
                 float[] audioFloatBuffer = e.getFloatBuffer();
                 float[] transformBuffer = new float[e.getBufferSize() * 2];
@@ -501,7 +589,6 @@ public class MainActivity extends Activity implements SensorEventListener {
                 System.arraycopy(audioFloatBuffer, 0, transformBuffer, 0, audioFloatBuffer.length);
                 fft.forwardTransform(transformBuffer);
                 fft.modulus(transformBuffer, amplitudes);
-
 
                 for (int index = 0; index < amplitudes.length; index++)
                 {
@@ -512,16 +599,16 @@ public class MainActivity extends Activity implements SensorEventListener {
                 }
 
 
-                pitch = String.valueOf((int) pitchInHz);
-                amplitude= String.valueOf((int) amp[0]);
+                pitch = (int) pitchInHz;
+                amplitude= (int) amp[0];
+                pitchProbability = pitchNoise;
 
                 runOnUiThread(new Runnable()
                 {
                     @Override
                     public void run()
                     {
-                        System.out.println("ProsodyFeatures : pitchInHz : " + pitchInHz);
-                        System.out.println("ProsodyFeatures : amplitudes : " + amp[0]);
+
                     }
                 });
             }
@@ -531,6 +618,60 @@ public class MainActivity extends Activity implements SensorEventListener {
 
         Thread audioThread = new Thread(dispatcher, "Audio Thread");
         audioThread.start();
+    }
+
+    private int asses_result(int heatbeat, float pitch, float amplitude, String level)
+    {
+        int result = 0;
+
+        if(level.equals("calm"))
+        {
+            if (heatbeat < calmnessHeartBeat && pitch < calmnessPitch && amplitude < calmnessAmplitude)
+                result = 100;
+        }
+        else if (level.equals("stress"))
+        {
+            // ALL
+            if ((heatbeat >= calmnessHeartBeat && heatbeat < angerHeartBeat) && (pitch >= calmnessPitch && pitch < angerPitch) && (amplitude >= calmnessAmplitude && amplitude < angerAmplitude))
+                result = 100;
+
+            // NO HEART BEAT
+            else if ((heatbeat < calmnessHeartBeat || heatbeat > angerHeartBeat) && (pitch >= calmnessPitch && pitch < angerPitch) && (amplitude >= calmnessAmplitude && amplitude < angerAmplitude))
+                result = 83;
+
+            // NO PITCH
+            else if ((heatbeat >= calmnessHeartBeat && heatbeat < angerHeartBeat) && (pitch < calmnessPitch || pitch > angerPitch) && (amplitude >= calmnessAmplitude && amplitude < angerAmplitude))
+                result = 83;
+
+            // NO AMPLITUDE
+            else if ((heatbeat >= calmnessHeartBeat && heatbeat < angerHeartBeat) && (pitch >= calmnessPitch && pitch < angerPitch) && (amplitude < calmnessAmplitude || amplitude > angerAmplitude))
+                result = 83;
+
+
+                // NO HEART BEAT && NO PITCH
+                else if ((heatbeat < calmnessHeartBeat || heatbeat > angerHeartBeat) && (pitch < calmnessPitch || pitch > angerPitch) && (amplitude >= calmnessAmplitude && amplitude < angerAmplitude))
+                    result = 67;
+
+                // NO HEART BEAT && NO AMPLITUDE
+                else if ((heatbeat < calmnessHeartBeat || heatbeat > angerHeartBeat) && (pitch >= calmnessPitch && pitch < angerPitch) && (amplitude < calmnessAmplitude || amplitude > angerAmplitude))
+                    result = 67;
+
+                // NO PITCH && NO AMPLITUDE
+                else if ((heatbeat >= calmnessHeartBeat && heatbeat < angerHeartBeat) && (pitch < calmnessPitch || pitch > angerPitch) && (amplitude < calmnessAmplitude || amplitude > angerAmplitude))
+                    result = 67;
+
+                    else
+                        result = 50;
+        }
+        else if (level.equals("anger"))
+        {
+            if (heatbeat >= angerHeartBeat && pitch >= angerPitch && amplitude >= angerAmplitude)
+                result = 100;
+        }
+
+        System.out.println("Result : " +  result);
+
+        return  result;
     }
 
 }
