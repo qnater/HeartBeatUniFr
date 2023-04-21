@@ -138,7 +138,6 @@ public class DialogLogic
         }
     }
 
-
     public void commandUser(String userCommand)
     {
         if (userCommand.contains("relax") || userCommand.contains("Relax"))
