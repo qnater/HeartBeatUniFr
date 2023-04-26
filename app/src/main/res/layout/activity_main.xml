@@ -21,6 +21,13 @@
         android:padding="@dimen/inner_frame_layout_padding"
         app:layout_boxedEdges="all">
 
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/displayLog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="35dp"
+            android:background="#50999999" />
+
         <TableRow
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

@@ -3,6 +3,8 @@ package com.example.checksensoravailability.ModalitiesFission;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.media.MediaPlayer;
+
+import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
 import com.example.checksensoravailability.R;
 
 public class FissionLogic
@@ -15,6 +17,7 @@ public class FissionLogic
     public FissionLogic(Context applicationContext)
     {
         this.applicationContext = applicationContext;
+
         mediaPlayer = MediaPlayer.create(applicationContext, R.raw.dcl);
     }
 
@@ -53,4 +56,5 @@ public class FissionLogic
                 break;
         }
     }
+
 }

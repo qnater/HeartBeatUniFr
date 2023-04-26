@@ -1,16 +1,10 @@
 package com.example.checksensoravailability.ModalitiesFusion;
 
-import static android.content.Context.VIBRATOR_SERVICE;
-
 import android.app.Activity;
-import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.os.Vibrator;
 
 import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
 import com.example.checksensoravailability.InputHeartBeat.HeartBeatData;
 import com.example.checksensoravailability.InputProsody.ProsodyData;
-import com.example.checksensoravailability.R;
 
 public class FusionLogic
 {
@@ -19,10 +13,12 @@ public class FusionLogic
     private FusionData fusionData;
     private PersistenceLogic persistenceLogic;
     private Activity mainActivity;
+    private Fusion fusion;
 
-    public FusionLogic(Activity mainActivity, HeartBeatData heartData, ProsodyData prosodyData, FusionData fusionData, PersistenceLogic persistenceLogic)
+    public FusionLogic(Activity mainActivity, Fusion fusion, HeartBeatData heartData, ProsodyData prosodyData, FusionData fusionData, PersistenceLogic persistenceLogic)
     {
         this.mainActivity = mainActivity;
+        this.fusion = fusion;
         this.heartData = heartData;
         this.prosodyData = prosodyData;
         this.fusionData = fusionData;
@@ -103,53 +99,55 @@ public class FusionLogic
     public void sensorLogicProcessing()
     {
 
-        if (heartData.getHeartbeat() < heartData.getCalmnessHeartBeat() && prosodyData.getPitch() < prosodyData.getCalmnessPitch()  && prosodyData.getAmplitude() < prosodyData.getCalmnessAmplitude())  // Ereshkigal
+        if (fusion.getHeartBeat() < heartData.getCalmnessHeartBeat() && fusion.getPitch() < prosodyData.getCalmnessPitch()  && fusion.getAmplitude() < prosodyData.getCalmnessAmplitude())  // Ereshkigal
         {
             fusionData.setLevel("calm");
 
-            float fusion = fusion_result((int)heartData.getHeartbeat(),
-                    prosodyData.getPitch(),
-                    prosodyData.getAmplitude(),
+            float fusionProcess = fusion_result((int)fusion.getHeartBeat(),
+                    fusion.getPitch(),
+                    fusion.getAmplitude(),
                     fusionData.getLevel());
-            fusionData.setAuc(fusion);
+            fusionData.setAuc(fusionProcess);
 
         }
-        else if (heartData.getHeartbeat() >= heartData.getAngerHeartBeat() && prosodyData.getPitch() >= prosodyData.getAngerPitch() && prosodyData.getAmplitude() >= prosodyData.getAngerAmplitude()) // Eriri
+        else if (fusion.getHeartBeat() >= heartData.getAngerHeartBeat() && fusion.getPitch() >= prosodyData.getAngerPitch() && fusion.getAmplitude() >= prosodyData.getAngerAmplitude()) // Eriri
         {
             fusionData.setLevel("anger");
 
-            float fusion = fusion_result((int)heartData.getHeartbeat(),
-                    prosodyData.getPitch(),
-                    prosodyData.getAmplitude(),
+            float fusionProcess = fusion_result((int)fusion.getHeartBeat(),
+                    fusion.getPitch(),
+                    fusion.getAmplitude(),
                     fusionData.getLevel());
-            fusionData.setAuc(fusion);
+            fusionData.setAuc(fusionProcess);
 
         }
         else // Tohsaka
         {
             fusionData.setLevel("stress");
 
-            float fusion = fusion_result((int)heartData.getHeartbeat(),
-                    prosodyData.getPitch(),
-                    prosodyData.getAmplitude(),
+            float fusionProcess = fusion_result((int)fusion.getHeartBeat(),
+                    fusion.getPitch(),
+                    fusion.getAmplitude(),
                     fusionData.getLevel());
-            fusionData.setAuc(fusion);
+            fusionData.setAuc(fusionProcess);
 
         }
 
-        System.out.println("Sensors Features - Heart Beats : \t" + heartData.getHeartbeat() + " bpm");
-        System.out.println("Prosody Features - Pitch in Hz : \t" + prosodyData.getPitch() + " Hz");
-        System.out.println("Prosody Features - Amplitudes  : \t" + prosodyData.getAmplitude() + " dBm");
-        System.out.println("Prosody Features - Noise       : \t" + prosodyData.getNoise() + "%");
+        System.out.println("Sensors Features - Heart Beats : \t" + fusion.getHeartBeat() + " bpm");
+        System.out.println("Prosody Features - Pitch in Hz : \t" + fusion.getPitch() + " Hz");
+        System.out.println("Prosody Features - Amplitudes  : \t" + fusion.getAmplitude() + " dBm");
+        System.out.println("Prosody Features - Noise       : \t" + fusion.getNoise() + "%");
         System.out.println("Multimodal value - LEVEL       : \t" + fusionData.getLevel());
         System.out.println("Multimodal value - AUC         : \t" + fusionData.getAuc() + "%");
 
-        persistenceLogic.writeDataset((int)heartData.getHeartbeat(),
-                prosodyData.getPitch(),
-                prosodyData.getAmplitude(),
+        persistenceLogic.writeDataset((int)fusion.getHeartBeat(),
+                fusion.getPitch(),
+                fusion.getAmplitude(),
                 (int)fusionData.getAuc(),
-                prosodyData.getNoise(),
+                fusion.getNoise(),
                 fusionData.getLevel());
 
     }
+
+
 }

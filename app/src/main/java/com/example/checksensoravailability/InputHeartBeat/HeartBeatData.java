@@ -8,12 +8,6 @@ public class HeartBeatData
     private int angerHeartBeat = 100;
 
 
-    // ===================================================================================== //
-    // SHARED DATA
-    private float heartbeat = 0;
-
-
-
 
     public HeartBeatData()
     {
@@ -39,17 +33,6 @@ public class HeartBeatData
     {
         this.angerHeartBeat = angerHeartBeat;
     }
-
-    public float getHeartbeat()
-    {
-        return heartbeat;
-    }
-
-    public void setHeartbeat(float heartbeat)
-    {
-        this.heartbeat = heartbeat;
-    }
-
 
 
 }

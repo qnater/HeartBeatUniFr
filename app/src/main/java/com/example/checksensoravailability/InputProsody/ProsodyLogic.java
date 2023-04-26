@@ -11,6 +11,7 @@ import android.util.Log;
 import androidx.annotation.Nullable;
 
 import com.example.checksensoravailability.DialogManagement.DialogLogic;
+import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 
 import java.util.ArrayList;
 
@@ -29,12 +30,14 @@ public class ProsodyLogic
     private Activity mainActivity;
     protected static final int RESULT_SPEECH = 1;
     private static final String TAG = "ProsodyLogic";
+    private Fusion fusion;
 
 
-    public ProsodyLogic(Activity mainActivity, ProsodyData prosodyData)
+    public ProsodyLogic(Activity mainActivity, ProsodyData prosodyData, Fusion fusion)
     {
         this.mainActivity = mainActivity;
         this.prosodyData = prosodyData;
+        this.fusion = fusion;
     }
 
     /**
@@ -71,10 +74,11 @@ public class ProsodyLogic
                     }
                 }
 
+                int pitch = (int) pitchInHz;
+                int amplitude = (int) amp[0];
+                float noise = ((1-pitchNoise)*100);
 
-                prosodyData.setPitch((int) pitchInHz);
-                prosodyData.setAmplitude((int) amp[0]);
-                prosodyData.setNoise(((1-pitchNoise)*100));
+                fusion.setProsodyModality(pitch, amplitude, noise);
 
                 /*
                 mainActivity.runOnUiThread(new Runnable()

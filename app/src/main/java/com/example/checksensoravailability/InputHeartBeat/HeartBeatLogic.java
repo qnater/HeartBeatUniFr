@@ -14,6 +14,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 import com.example.checksensoravailability.ModalitiesFusion.FusionLogic;
 
 
@@ -24,19 +25,19 @@ public class HeartBeatLogic implements SensorEventListener
 
     private static final String TAG = "HeartBeatModality";
 
-    private HeartBeatData heartData;
     private Activity mainActivity;
     private FusionLogic fusionLogic;
+    private Fusion fusion;
     private Context context;
 
-    public HeartBeatLogic(Activity mainActivity, Context context, HeartBeatData heartData, FusionLogic fusionLogic)
+    public HeartBeatLogic(Activity mainActivity, Context context, Fusion fusion, FusionLogic fusionLogic)
     {
         System.out.println(">> Listener On");
 
         this.mainActivity = mainActivity;
         this.context = context;
 
-        this.heartData = heartData;
+        this.fusion = fusion;
         this.fusionLogic = fusionLogic;
 
         checkSensorAvailability();
@@ -79,7 +80,7 @@ public class HeartBeatLogic implements SensorEventListener
     public void onSensorChanged(SensorEvent event)
     {
         if (event.sensor.getType() == Sensor.TYPE_HEART_RATE)
-            heartData.setHeartbeat((int) event.values[0]);
+            fusion.setHeartModality((int) event.values[0]);
 
         fusionLogic.sensorLogicProcessing();
     }
