@@ -29,7 +29,16 @@ public class FusionLogic
         this.persistenceLogic = persistenceLogic;
     }
 
-
+    /**
+     * Function that merges the recollect of data from the fusion listener and get the % of prediction
+     *
+     * @param heatBeat int - Value of the heartbeat
+     * @param pitch float - Value of prosody pitch
+     * @param amplitude float - Value of prosody amplitude
+     * @param level String - prediction of the logic
+     * @return result int - Value (%) of the prediction
+     * @autor Quentin Nater
+     */
     public int fusion_result(int heatBeat, float pitch, float amplitude, String level)
     {
         int result = 0;
@@ -85,6 +94,12 @@ public class FusionLogic
     }
 
 
+    /**
+     * Function that collects the data from the inputs and set their logic to their data object
+     * Also calculate the percentage of prediction correctness and write the fusion in a dataset
+     *
+     * @autor Quentin Nater
+     */
     public void sensorLogicProcessing()
     {
 
@@ -137,5 +152,4 @@ public class FusionLogic
                 fusionData.getLevel());
 
     }
-
 }

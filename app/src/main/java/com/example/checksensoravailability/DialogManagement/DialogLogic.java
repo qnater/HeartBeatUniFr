@@ -2,6 +2,7 @@ package com.example.checksensoravailability.DialogManagement;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
+import static android.app.Activity.RESULT_OK;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -14,6 +15,7 @@ import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
@@ -23,6 +25,7 @@ import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 
 public class DialogLogic
 {
@@ -40,13 +43,18 @@ public class DialogLogic
     private static final int REQUEST_AUDIO_PERMISSION_CODE = 1;
 
 
-    public DialogLogic(Activity recorderActivity, Context context, FissionLogic fissionLogic)
+    public DialogLogic(Activity mainActivity, Context context, FissionLogic fissionLogic)
     {
         this.fissionLogic = fissionLogic;
-        this.recorderActivity = recorderActivity;
+        this.recorderActivity = mainActivity;
         this.context = context;
     }
 
+    /**
+     * Function that calls the sphinx recorder for user commands
+     *
+     * @autor Quentin Nater
+     */
     public void sphinxCall()
     {
         deadLock = false;
@@ -69,14 +77,11 @@ public class DialogLogic
     }
 
 
-    public boolean CheckPermissions()
-    {
-        // this method is used to check permission
-        int result = ContextCompat.checkSelfPermission(context, WRITE_EXTERNAL_STORAGE);
-        int result1 = ContextCompat.checkSelfPermission(context, RECORD_AUDIO);
-        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
-    }
-
+    /**
+     * Function that starts a recording of the user voice for storage
+     *
+     * @autor Quentin Nater
+     */
     public void startRecording()
     {
         // check permission method is used to check
@@ -138,6 +143,13 @@ public class DialogLogic
         }
     }
 
+
+    /**
+     * Function that starts a recording of the user voice for storage
+     *
+     * @param userCommand String - Value of the user command
+     * @autor Quentin Nater
+     */
     public void commandUser(String userCommand)
     {
         if (userCommand.contains("relax") || userCommand.contains("Relax"))
@@ -153,6 +165,11 @@ public class DialogLogic
     }
 
 
+    /**
+     * Function that pauses the recording of the voice
+     *
+     * @autor Quentin Nater
+     */
     public void pauseRecording()
     {
         // below method will stop
@@ -168,6 +185,82 @@ public class DialogLogic
     }
 
 
+    /**
+     * Function that handles the user request on the main application
+     *
+     * @param request int - Request the user command
+     * @param code int - System code the user command
+     * @param data Intent - Date receive by the user command
+     * @autor Quentin Nater
+     */
+    public void handleUserRequest(int request, int code, @Nullable Intent data)
+    {
+        switch (request)
+        {
+            case RESULT_SPEECH:
+                if (code == RESULT_OK && data != null)
+                {
+                    ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+
+                    String userCommand = text.get(0);
+                    Log.d(TAG, "Sphinx get : " + userCommand);
+
+                    commandUser(userCommand);
+                }
+                break;
+        }
+    }
+
+
+    /**
+     * Function that handles the system right of user request on the main application
+     *
+     * @param requestCode int -  System code the user command
+     * @param permissions String[] - List of permissions requested
+     * @param grantResults int[] - List of permissions granted
+     * @autor Quentin Nater
+     */
+    public void requestUser(int requestCode, String[] permissions, int[] grantResults)
+    {
+        switch (requestCode)
+        {
+            case REQUEST_AUDIO_PERMISSION_CODE:
+                if (grantResults.length > 0)
+                {
+                    boolean permissionToRecord = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                    boolean permissionToStore = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                    if (permissionToRecord && permissionToStore)
+                    {
+                        Toast.makeText(recorderActivity.getApplicationContext(), "Permission Granted", Toast.LENGTH_LONG).show();
+                    }
+                    else
+                    {
+                        Toast.makeText(recorderActivity.getApplicationContext(), "Permission Denied", Toast.LENGTH_LONG).show();
+                    }
+                }
+                break;
+        }
+    }
+
+
+    /**
+     * Check permission on the system hardware
+     *
+     * @autor Quentin Nater
+     */
+    public boolean CheckPermissions()
+    {
+        // this method is used to check permission
+        int result = ContextCompat.checkSelfPermission(context, WRITE_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(context, RECORD_AUDIO);
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * Request permission on the system hardware
+     *
+     * @autor Quentin Nater
+     */
     private void RequestPermissions()
     {
         // this method is used to request the

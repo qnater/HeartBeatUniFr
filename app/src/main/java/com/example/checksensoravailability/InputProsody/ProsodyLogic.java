@@ -1,8 +1,18 @@
 package com.example.checksensoravailability.InputProsody;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Environment;
+import android.speech.RecognizerIntent;
 import android.util.Log;
+
+import androidx.annotation.Nullable;
+
+import com.example.checksensoravailability.DialogManagement.DialogLogic;
+
+import java.util.ArrayList;
 
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
@@ -17,12 +27,21 @@ public class ProsodyLogic
 {
     private ProsodyData prosodyData;
     private Activity mainActivity;
+    protected static final int RESULT_SPEECH = 1;
+    private static final String TAG = "ProsodyLogic";
+
+
     public ProsodyLogic(Activity mainActivity, ProsodyData prosodyData)
     {
         this.mainActivity = mainActivity;
         this.prosodyData = prosodyData;
     }
 
+    /**
+     * Function that extract pitch, noise and amplitude from user voice
+     *
+     * @autor Quentin Nater
+     */
     public void extractFeatures()
     {
         AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050,1024,0);
@@ -78,4 +97,8 @@ public class ProsodyLogic
         Thread audioThread = new Thread(dispatcher, "Audio Thread");
         audioThread.start();
     }
+
+
+
+
 }

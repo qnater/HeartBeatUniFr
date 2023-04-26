@@ -19,9 +19,12 @@ public class FissionLogic
     }
 
 
-
-
-
+    /**
+     * Function that called pre-defined relaxation method of psychology
+     *
+     * @param played int - Which type of music or relaxation method will be played
+     * @autor Quentin Nater
+     */
     public void relaxationMethod(int played)
     {
         switch (played)
