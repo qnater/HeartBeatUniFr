@@ -18,6 +18,18 @@ public class PersistenceLogic
     private int i = 0;
 
 
+    /**
+     * Write dataset of the fusion data with prediction
+     *
+     * @param heatBeat int - Value of the heartbeat
+     * @param pitch float - Value of prosody pitch
+     * @param amplitude float - Value of prosody amplitude
+     * @param auc int - Value of Area Under the Curve
+     * @param noise float - Value of the noise of the prediction
+     * @param level String - prediction of the logic
+     * @throws IOException e - Cannot write
+     * @autor Quentin Nater
+     */
     public void writeDataset(int heatBeat, float pitch, float amplitude, int auc, float noise, String level)
     {
         try

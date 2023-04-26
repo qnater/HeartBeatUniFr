@@ -1,24 +1,15 @@
 package com.example.checksensoravailability;
-
-import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
-import android.hardware.SensorEventListener;
-import android.hardware.SensorManager;
-import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.Vibrator;
-import android.speech.RecognizerIntent;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.Nullable;
 
 import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
@@ -31,76 +22,76 @@ import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
 import com.example.checksensoravailability.ModalitiesFusion.FusionData;
 import com.example.checksensoravailability.ModalitiesFusion.FusionLogic;
 import com.example.checksensoravailability.databinding.ActivityMainBinding;
-import java.util.ArrayList;
 
 
-public class MainActivity extends Activity implements SensorEventListener
+public class MainActivity extends Activity
 {
-    private TextView tbxHeartRate;
-
-    private ImageView imgView;
-
-
-    private static final String TAG = "____Main___";
-
-    protected static final int RESULT_SPEECH = 1;
-
     // =====================================================================
     // Initializing all variables..
+    private static final String TAG = "____Main___";
+
+
+    // ==== Graphical objects ==============================================
+    private TextView tbxHeartRate;
+    private ImageView imgView;
     private ImageView imgMic;
+
+    // ==== Display logic ==================================================
     private Boolean mode = true;
     private int state = 0;
     private Boolean picState = true;
-    private static final int REQUEST_AUDIO_PERMISSION_CODE = 1;
-    private MediaPlayer mediaPlayer;
+
+    // ==== Logic as library ===============================================
     private HeartBeatData heartData;
     private ProsodyData prosodyData;
-    private ProsodyLogic prosodyLogic;
     private FusionData fusionData;
-    private FusionLogic fusionLogic;
-    private FissionLogic fissionLogic;
     private DialogLogic dialogLogic;
-    private PersistenceLogic persistenceLogic;
-    private HeartBeatLogic heartBeatLogic;
 
-
+    /**
+     * Function that handles the creation of the application
+     *
+     * @param savedInstanceState Bundle - Instance of the application
+     * @autor Quentin Nater
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
 
+        // logical initialization of objects
         heartData = new HeartBeatData();
         prosodyData = new ProsodyData();
         fusionData = new FusionData();
         fusionData.setLevel("calm");
 
-        persistenceLogic = new PersistenceLogic();
-        fissionLogic = new FissionLogic(getApplicationContext());
-        prosodyLogic = new ProsodyLogic(this, prosodyData);
+        PersistenceLogic persistenceLogic = new PersistenceLogic();
+        FissionLogic fissionLogic = new FissionLogic(getApplicationContext());
+        ProsodyLogic prosodyLogic = new ProsodyLogic(this, prosodyData);
         dialogLogic = new DialogLogic(this, getApplicationContext(), fissionLogic);
-        fusionLogic = new FusionLogic(this, heartData, prosodyData, fusionData, persistenceLogic);
-        heartBeatLogic = new HeartBeatLogic(this, heartData, fusionLogic);
+        FusionLogic fusionLogic = new FusionLogic(this, heartData, prosodyData, fusionData, persistenceLogic);
+        HeartBeatLogic heartBeatLogic = new HeartBeatLogic(this, getApplicationContext(), heartData, fusionLogic);
 
+        // Initialize the activity
         ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
-
         setContentView(binding.getRoot());
 
+        // Get the graphical objects
         tbxHeartRate = binding.tbxHeartRate;
         imgView = binding.imgBackground;
         imgMic = binding.imgMic;
-
         ImageView imgSphinx = binding.imgSphinx;
 
-        checkPermission();
-        checkSensorAvailability();
-
+        // Start extract voice of the user
         prosodyLogic.extractFeatures();
 
+        // ========================================================================================
+        // LISTERNER OF GRAPHICAL OBJECTS
         imgView.setOnClickListener(new View.OnClickListener()
         {
            @Override
            public void onClick(View v)
            {
+               // Switch data (variables) to display
                if(state!=3)
                    state = state + 1;
                else
@@ -109,31 +100,37 @@ public class MainActivity extends Activity implements SensorEventListener
         });
 
 
-        imgView.setOnLongClickListener(new View.OnLongClickListener() {
+        imgView.setOnLongClickListener(new View.OnLongClickListener()
+        {
             @Override
             public boolean onLongClick(View view)
             {
+                // Change background
                 picState = !picState;
-                return false;
+                return picState;
             }
         });
 
 
         imgMic.setOnClickListener(new View.OnClickListener()
         {
+            // Mic and record
             @Override
-            public void onClick(View v) {
+            public void onClick(View v)
+            {
                 Log.d(TAG, "MODE :" + mode.toString());
 
                 Drawable drawable;
 
-                if (mode) {
+                if (mode)
+                {
                     Log.d(TAG, "START RECORDING___");
                     dialogLogic.startRecording();
                     drawable = getDrawable(R.drawable.close_mic);
                     imgMic.setImageDrawable(drawable);
                     mode = false;
-                } else {
+                } else
+                {
                     Log.d(TAG, "STOP RECORDING___");
                     dialogLogic.pauseRecording();
                     drawable = getDrawable(R.drawable.open_mic);
@@ -142,6 +139,7 @@ public class MainActivity extends Activity implements SensorEventListener
                 }
             }
         });
+
 
         imgSphinx.setOnClickListener(new View.OnClickListener()
         {
@@ -152,52 +150,28 @@ public class MainActivity extends Activity implements SensorEventListener
             }
         });
 
-    }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        switch (requestCode)
+        // Handle refresh threshold of data
+        int refreshThreshold = 500;
+        Handler handler = new Handler();
+        Runnable runnable = new Runnable()
         {
-            case RESULT_SPEECH:
-                if (resultCode == RESULT_OK && data != null)
-                {
-                    ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-
-                    String userCommand = text.get(0);
-                    Log.d(TAG, "Sphinx get : " + userCommand);
-
-                    dialogLogic.commandUser(userCommand);
-                }
-                break;
-        }
-
+            @Override
+            public void run()
+            {
+                updateDisplay();
+                handler.postDelayed(this, refreshThreshold); // Call this runnable again after 2 seconds
+            }
+        };
+        handler.postDelayed(runnable, refreshThreshold); // Call this runnable after 2 seconds
     }
 
-
-
-    private void checkSensorAvailability()
-    {
-        SensorManager mSensorManager = ((SensorManager) getSystemService(SENSOR_SERVICE));
-        Sensor mHeartRateSensor = mSensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE);
-        mSensorManager.registerListener(this, mHeartRateSensor, SensorManager.SENSOR_DELAY_NORMAL);
-    }
-
-
-    public void onSensorChanged(SensorEvent event)
-    {
-        if (event.sensor.getType() == Sensor.TYPE_HEART_RATE)
-            heartData.setHeartbeat((int) event.values[0]);
-
-        fusionLogic.sensorLogicProcessing();
-        updateDisplay();
-    }
-
-
-
-    private void updateDisplay()
+    /**
+     * Change the display based on the receive data
+     *
+     * @autor Quentin Nater
+     */
+    public void updateDisplay()
     {
         Drawable drawable;
 
@@ -264,45 +238,36 @@ public class MainActivity extends Activity implements SensorEventListener
             tbxHeartRate.setText((int)heartData.getHeartbeat() + "bpm");
     }
 
-    public void onAccuracyChanged(Sensor sensor, int accuracy)
+
+    /**
+     * Function that handles the user request on the main application
+     *
+     * @param requestCode int - Request the user command
+     * @param resultCode int - System code the user command
+     * @param data Intent - Date receive by the user command
+     * @autor Quentin Nater
+     */
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
     {
-        Log.d(TAG, "onAccuracyChanged - accuracy: " + accuracy);
+        // result of the record
+        super.onActivityResult(requestCode, resultCode, data);
+        dialogLogic.handleUserRequest(requestCode, resultCode, data);
     }
 
-
-    private void checkPermission()
-    {
-        // Runtime permission ------------
-        if (checkSelfPermission(Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED)
-            requestPermissions(new String[]{Manifest.permission.BODY_SENSORS}, 1);
-        else
-            Log.d(TAG, "ALREADY GRANTED");
-    }
-
-
+    /**
+     * Function that handles the system right of user request on the main application
+     *
+     * @param requestCode int -  System code the user command
+     * @param permissions String[] - List of permissions requested
+     * @param grantResults int[] - List of permissions granted
+     * @autor Quentin Nater
+     */
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
     {
-        // this method is called when user will
-        // grant the permission for audio recording.
+        // request for the record
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        switch (requestCode)
-        {
-            case REQUEST_AUDIO_PERMISSION_CODE:
-                if (grantResults.length > 0)
-                {
-                    boolean permissionToRecord = grantResults[0] == PackageManager.PERMISSION_GRANTED;
-                    boolean permissionToStore = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-                    if (permissionToRecord && permissionToStore)
-                    {
-                        Toast.makeText(getApplicationContext(), "Permission Granted", Toast.LENGTH_LONG).show();
-                    }
-                    else
-                    {
-                        Toast.makeText(getApplicationContext(), "Permission Denied", Toast.LENGTH_LONG).show();
-                    }
-                }
-                break;
-        }
+        dialogLogic.requestUser(requestCode, permissions, grantResults);
     }
 }
