@@ -11,14 +11,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
+import com.example.checksensoravailability.DialogManagement.DialogData;
 import com.example.checksensoravailability.DialogManagement.DialogLogic;
+import com.example.checksensoravailability.Display.ViewHolderAdapter;
 import com.example.checksensoravailability.InputHeartBeat.HeartBeatData;
 import com.example.checksensoravailability.InputHeartBeat.HeartBeatLogic;
 import com.example.checksensoravailability.InputProsody.ProsodyData;
 import com.example.checksensoravailability.InputProsody.ProsodyLogic;
 import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
+import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 import com.example.checksensoravailability.ModalitiesFusion.FusionData;
 import com.example.checksensoravailability.ModalitiesFusion.FusionLogic;
 import com.example.checksensoravailability.databinding.ActivityMainBinding;
@@ -42,10 +47,12 @@ public class MainActivity extends Activity
     private Boolean picState = true;
 
     // ==== Logic as library ===============================================
-    private HeartBeatData heartData;
-    private ProsodyData prosodyData;
     private FusionData fusionData;
+    private DialogData dialogData;
     private DialogLogic dialogLogic;
+    private Fusion fusion;
+    private RecyclerView myQueryView;
+    private ActivityMainBinding binding;
 
     /**
      * Function that handles the creation of the application
@@ -59,20 +66,22 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
 
         // logical initialization of objects
-        heartData = new HeartBeatData();
-        prosodyData = new ProsodyData();
+        fusion = new Fusion();
+        HeartBeatData heartData = new HeartBeatData();
+        ProsodyData prosodyData = new ProsodyData();
+        dialogData = new DialogData();
         fusionData = new FusionData();
         fusionData.setLevel("calm");
 
         PersistenceLogic persistenceLogic = new PersistenceLogic();
         FissionLogic fissionLogic = new FissionLogic(getApplicationContext());
-        ProsodyLogic prosodyLogic = new ProsodyLogic(this, prosodyData);
-        dialogLogic = new DialogLogic(this, getApplicationContext(), fissionLogic);
-        FusionLogic fusionLogic = new FusionLogic(this, heartData, prosodyData, fusionData, persistenceLogic);
-        HeartBeatLogic heartBeatLogic = new HeartBeatLogic(this, getApplicationContext(), heartData, fusionLogic);
+        ProsodyLogic prosodyLogic = new ProsodyLogic(this, prosodyData, fusion);
+        dialogLogic = new DialogLogic(this, getApplicationContext(), dialogData, fissionLogic, persistenceLogic);
+        FusionLogic fusionLogic = new FusionLogic(this, fusion, heartData, prosodyData, fusionData, persistenceLogic);
+        HeartBeatLogic heartBeatLogic = new HeartBeatLogic(this, getApplicationContext(), fusion, fusionLogic);
 
         // Initialize the activity
-        ActivityMainBinding binding = ActivityMainBinding.inflate(getLayoutInflater());
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Get the graphical objects
@@ -80,6 +89,7 @@ public class MainActivity extends Activity
         imgView = binding.imgBackground;
         imgMic = binding.imgMic;
         ImageView imgSphinx = binding.imgSphinx;
+        myQueryView = binding.displayLog;
 
         // Start extract voice of the user
         prosodyLogic.extractFeatures();
@@ -160,10 +170,29 @@ public class MainActivity extends Activity
             public void run()
             {
                 updateDisplay();
+                updateInteraction();
                 handler.postDelayed(this, refreshThreshold); // Call this runnable again after 2 seconds
             }
         };
         handler.postDelayed(runnable, refreshThreshold); // Call this runnable after 2 seconds
+    }
+
+    /**
+     * Change the interaction result with the user
+     *
+     * @autor Quentin Nater
+     */
+    private void updateInteraction()
+    {
+        if(!dialogData.getUserQueryResult().isEmpty())
+        {
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this);
+            myQueryView.setLayoutManager(layoutManager);
+
+            ViewHolderAdapter adapter = new ViewHolderAdapter(dialogData.getUserRafinedQueryResult());
+            myQueryView.setAdapter(adapter);
+        }
+
     }
 
     /**
@@ -185,10 +214,11 @@ public class MainActivity extends Activity
             imgView.setImageDrawable(drawable);
             tbxHeartRate.setTextColor(Color.BLACK);
 
+
             if(state == 1)
-                tbxHeartRate.setText((int)prosodyData.getPitch() + "Hz");
+                tbxHeartRate.setText((int)fusion.getPitch() + "Hz");
             else if(state == 2)
-                tbxHeartRate.setText((int)prosodyData.getAmplitude() + "amp");
+                tbxHeartRate.setText((int)fusion.getAmplitude() + "amp");
             else if(state == 3)
                 tbxHeartRate.setText((int)fusionData.getAuc() + "%");
         }
@@ -204,9 +234,9 @@ public class MainActivity extends Activity
             tbxHeartRate.setTextColor(Color.BLACK);
 
             if(state == 1)
-                tbxHeartRate.setText((int)prosodyData.getPitch() + "Hz");
+                tbxHeartRate.setText((int)fusion.getPitch() + "Hz");
             else if(state == 2)
-                tbxHeartRate.setText((int)prosodyData.getAmplitude() + "amp");
+                tbxHeartRate.setText((int)fusion.getAmplitude() + "amp");
             else if(state == 3)
                 tbxHeartRate.setText((int)fusionData.getAuc() + "%");
 
@@ -227,15 +257,15 @@ public class MainActivity extends Activity
             tbxHeartRate.setTextColor(Color.WHITE);
 
             if(state == 1)
-                tbxHeartRate.setText((int)prosodyData.getPitch() + "Hz");
+                tbxHeartRate.setText((int)fusion.getPitch() + "Hz");
             else if(state == 2)
-                tbxHeartRate.setText((int)prosodyData.getAmplitude() + "amp");
+                tbxHeartRate.setText((int)fusion.getAmplitude() + "amp");
             else if(state == 3)
                 tbxHeartRate.setText((int)fusionData.getAuc() + "%");
         }
 
         if(state == 0)
-            tbxHeartRate.setText((int)heartData.getHeartbeat() + "bpm");
+            tbxHeartRate.setText((int)fusion.getHeartBeat() + "bpm");
     }
 
 

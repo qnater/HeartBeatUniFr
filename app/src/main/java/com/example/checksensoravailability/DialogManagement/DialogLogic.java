@@ -19,6 +19,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
+import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
 import com.example.checksensoravailability.MainActivity;
 import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
 
@@ -38,14 +39,19 @@ public class DialogLogic
     private MediaRecorder mRecorder;
 
     private FissionLogic fissionLogic;
+    private PersistenceLogic persistenceLogic;
+    private DialogData dialogData;
+
     private static final String TAG = "DialogLogic";
 
     private static final int REQUEST_AUDIO_PERMISSION_CODE = 1;
 
 
-    public DialogLogic(Activity mainActivity, Context context, FissionLogic fissionLogic)
+    public DialogLogic(Activity mainActivity, Context context, DialogData dialogData, FissionLogic fissionLogic, PersistenceLogic persistenceLogic)
     {
+        this.dialogData = dialogData;
         this.fissionLogic = fissionLogic;
+        this.persistenceLogic = persistenceLogic;
         this.recorderActivity = mainActivity;
         this.context = context;
     }
@@ -160,6 +166,64 @@ public class DialogLogic
             fissionLogic.relaxationMethod(0);
         else if (userCommand.contains("victory") || userCommand.contains("Victory"))
             fissionLogic.relaxationMethod(3);
+        else if (userCommand.contains("clean") || userCommand.contains("wipe"))
+        {
+            ArrayList<String> tmp = dialogData.getUserQueryResult();
+            tmp.clear();
+            ArrayList<String> tmp2 = dialogData.getUserRafinedQueryResult();
+            tmp2.clear();
+            dialogData.setUserQueryResult(tmp);
+            dialogData.setUserRafinedQueryResult(tmp2);
+        }
+        else if (userCommand.contains("log") ||
+                userCommand.contains("Log") ||
+                userCommand.contains("get") ||
+                userCommand.contains("Get") ||
+                userCommand.contains("times") ||
+                userCommand.contains("Times")) {
+
+            int num = 0;
+            String[] words = userCommand.split(" ");
+
+            for (int i = 0; i < words.length; i++)
+            {
+                if (words[i].matches("\\d+"))
+                { // check if the word is a number
+                    num = Integer.parseInt(words[i]); // convert the word to an integer
+                    break; // exit the loop once the first number is found
+                }
+            }
+
+            System.out.println("The number is: " + num);
+
+            if (num > 10)
+                num = 10;
+
+            ArrayList<String> result = persistenceLogic.getAngryTimes(num);
+            ArrayList<String> refinedResult = new ArrayList<>();
+
+            for (String stressLine : result)
+            {
+                System.out.println("LOG REPORT : " + stressLine);
+
+                String[] fields = stressLine.split(",");
+
+                String date = fields[0];
+                String percentage = fields[6];
+
+                String[] dateDetails = date.split("-");
+                String month = dateDetails[1];
+                String day = dateDetails[2];
+                String hour = dateDetails[3];
+                String minute = dateDetails[4];
+
+                refinedResult.add(day+"."+month + " at " + hour+ ":"+ minute + " = " + percentage);
+            }
+
+            dialogData.setUserQueryResult(result);
+            dialogData.setUserRafinedQueryResult(refinedResult);
+
+        }
         else
             Log.d(TAG, "Pattern not understood... Sorry bro...");
     }
