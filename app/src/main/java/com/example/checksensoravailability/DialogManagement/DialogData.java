@@ -7,12 +7,18 @@ public class DialogData
 {
     // FIXED DATA
     private ArrayList<String> userQueryResult;
-    private ArrayList<String> userRafinedQueryResult;
+    private ArrayList<String> userRefinedQueryResult;
+
+    private ArrayList<String> historyCommands;
+    private ArrayList<String> historyResults;
+
 
     public DialogData()
     {
         userQueryResult = new ArrayList<>();
-        userRafinedQueryResult = new ArrayList<>();
+        userRefinedQueryResult = new ArrayList<>();
+        historyCommands = new ArrayList<>();
+        historyResults = new ArrayList<>();
     }
 
     public ArrayList<String> getUserQueryResult() {
@@ -24,14 +30,37 @@ public class DialogData
     }
 
 
-    public ArrayList<String> getUserRafinedQueryResult()
+    public ArrayList<String> getUserRefinedQueryResult()
     {
-        return userRafinedQueryResult;
+        return userRefinedQueryResult;
     }
 
-    public void setUserRafinedQueryResult(ArrayList<String> userRafinedQueryResult)
+    public void setUserRefinedQueryResult(ArrayList<String> userRafinedQueryResult)
     {
-        this.userRafinedQueryResult = userRafinedQueryResult;
+        this.userRefinedQueryResult = userRafinedQueryResult;
+    }
+
+
+    public ArrayList<String> getHistoryCommands() {
+        return historyCommands;
+    }
+
+    public void setHistoryCommands(ArrayList<String> historyCommands)
+    {
+        this.historyCommands = historyCommands;
+
+        System.out.println("\t\t\t HISTORY COMMANDS");
+        for (String command : historyCommands)
+            System.out.println("\t\t\t " + command);
+
+    }
+
+    public ArrayList<String> getHistoryResults() {
+        return historyResults;
+    }
+
+    public void setHistoryResults(ArrayList<String> historyResults) {
+        this.historyResults = historyResults;
     }
 
 }

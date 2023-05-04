@@ -22,6 +22,7 @@ import com.example.checksensoravailability.InputHeartBeat.HeartBeatData;
 import com.example.checksensoravailability.InputHeartBeat.HeartBeatLogic;
 import com.example.checksensoravailability.InputProsody.ProsodyData;
 import com.example.checksensoravailability.InputProsody.ProsodyLogic;
+import com.example.checksensoravailability.ModalitiesFission.Fission;
 import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
 import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 import com.example.checksensoravailability.ModalitiesFusion.FusionData;
@@ -42,7 +43,7 @@ public class MainActivity extends Activity
     private ImageView imgMic;
 
     // ==== Display logic ==================================================
-    private Boolean mode = true;
+    private Boolean mode = false;
     private int state = 0;
     private Boolean picState = true;
 
@@ -51,6 +52,7 @@ public class MainActivity extends Activity
     private DialogData dialogData;
     private DialogLogic dialogLogic;
     private Fusion fusion;
+    private Fission fission;
     private RecyclerView myQueryView;
     private ActivityMainBinding binding;
 
@@ -66,7 +68,8 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
 
         // logical initialization of objects
-        fusion = new Fusion();
+        fission = new Fission();
+        fusion = new Fusion(fission);
         HeartBeatData heartData = new HeartBeatData();
         ProsodyData prosodyData = new ProsodyData();
         dialogData = new DialogData();
@@ -76,7 +79,7 @@ public class MainActivity extends Activity
         PersistenceLogic persistenceLogic = new PersistenceLogic();
         FissionLogic fissionLogic = new FissionLogic(getApplicationContext());
         ProsodyLogic prosodyLogic = new ProsodyLogic(this, prosodyData, fusion);
-        dialogLogic = new DialogLogic(this, getApplicationContext(), dialogData, fissionLogic, persistenceLogic);
+        dialogLogic = new DialogLogic(this, getApplicationContext(), fission, dialogData, fissionLogic, persistenceLogic);
         FusionLogic fusionLogic = new FusionLogic(this, fusion, heartData, prosodyData, fusionData, persistenceLogic);
         HeartBeatLogic heartBeatLogic = new HeartBeatLogic(this, getApplicationContext(), fusion, fusionLogic);
 
@@ -135,14 +138,18 @@ public class MainActivity extends Activity
                 if (mode)
                 {
                     Log.d(TAG, "START RECORDING___");
-                    dialogLogic.startRecording();
+                    //dialogLogic.startRecording();
+                    fission.setAudion_on(false);
                     drawable = getDrawable(R.drawable.close_mic);
                     imgMic.setImageDrawable(drawable);
                     mode = false;
-                } else
+                }
+                else
                 {
                     Log.d(TAG, "STOP RECORDING___");
-                    dialogLogic.pauseRecording();
+                    //dialogLogic.pauseRecording();
+                    fission.setAudion_on(true);
+                    fissionLogic.speak_result("Fission Audion On ! Welcome to anger detection !");
                     drawable = getDrawable(R.drawable.open_mic);
                     imgMic.setImageDrawable(drawable);
                     mode = true;
@@ -164,11 +171,41 @@ public class MainActivity extends Activity
         // Handle refresh threshold of data
         int refreshThreshold = 500;
         Handler handler = new Handler();
+        final int[] temporality = {0};
         Runnable runnable = new Runnable()
         {
             @Override
             public void run()
             {
+
+                System.out.println("fission.getRelaxationState() :" + fission.getRelaxationState());
+                System.out.println("temporality[0] :" + temporality[0]);
+                if(fission.getRelaxationState() < 13 && fission.getRelaxationState() > 0)
+                {
+                    temporality[0] = temporality[0] + 1;
+
+                    if(temporality[0] % 4 == 0)
+                    {
+                        fission.setRelaxationState(fission.getRelaxationState() - 1);
+                    }
+                }
+                else if (fission.getRelaxationState() == 0)
+                {
+                    fission.setRelaxationState(15);
+                    dialogLogic.handleRelaxationResult();
+                }
+                else if (fission.getRelaxationState() == 14 && temporality[0] > 60)
+                {
+                    temporality[0] = 0;
+                    fission.setRelaxationState(13);
+                    dialogLogic.sphinxCall();
+                }
+                else if (fission.getRelaxationState() == 14)
+                {
+                    temporality[0] = temporality[0] + 1;
+                }
+
+
                 updateDisplay();
                 updateInteraction();
                 handler.postDelayed(this, refreshThreshold); // Call this runnable again after 2 seconds
@@ -189,7 +226,7 @@ public class MainActivity extends Activity
             LinearLayoutManager layoutManager = new LinearLayoutManager(this);
             myQueryView.setLayoutManager(layoutManager);
 
-            ViewHolderAdapter adapter = new ViewHolderAdapter(dialogData.getUserRafinedQueryResult());
+            ViewHolderAdapter adapter = new ViewHolderAdapter(dialogData.getUserRefinedQueryResult());
             myQueryView.setAdapter(adapter);
         }
 
@@ -202,9 +239,53 @@ public class MainActivity extends Activity
      */
     public void updateDisplay()
     {
-        Drawable drawable;
+        Drawable drawable = null;
 
-        if(fusionData.getLevel().equals("calm")) // Ereshkigal
+        if (fission.getRelaxationState() < 13) {
+            switch (fission.getRelaxationState()) {
+                case 1:
+                    drawable = getDrawable(R.drawable.one);
+                    break;
+                case 2:
+                    drawable = getDrawable(R.drawable.two);
+                    break;
+                case 3:
+                    drawable = getDrawable(R.drawable.three);
+                    break;
+                case 4:
+                    drawable = getDrawable(R.drawable.four);
+                    break;
+                case 5:
+                    drawable = getDrawable(R.drawable.five);
+                    break;
+                case 6:
+                    drawable = getDrawable(R.drawable.six);
+                    break;
+                case 7:
+                    drawable = getDrawable(R.drawable.seven);
+                    break;
+                case 8:
+                    drawable = getDrawable(R.drawable.eight);
+                    break;
+                case 9:
+                    drawable = getDrawable(R.drawable.nine);
+                    break;
+                case 10:
+                    drawable = getDrawable(R.drawable.ten);
+                    break;
+                case 11:
+                case 12:
+                    drawable = getDrawable(R.drawable.eleven);
+                    break;
+                default:
+                    break;
+            }
+
+            imgView.setImageDrawable(drawable);
+            tbxHeartRate.setTextColor(Color.BLACK);
+            tbxHeartRate.setText("Count");
+        }
+        else if(fusionData.getLevel().equals("calm")) // Ereshkigal
         {
             if(picState)
                 drawable = getDrawable(R.drawable.relax);
@@ -213,7 +294,6 @@ public class MainActivity extends Activity
 
             imgView.setImageDrawable(drawable);
             tbxHeartRate.setTextColor(Color.BLACK);
-
 
             if(state == 1)
                 tbxHeartRate.setText((int)fusion.getPitch() + "Hz");
@@ -245,7 +325,7 @@ public class MainActivity extends Activity
             long[] vibrationPattern = {0, 500, 50, 300};
             vibrator.vibrate(vibrationPattern, -1);
         }
-        else
+        else if (fusionData.getLevel().equals("stress"))
         {
             if(picState)
                 drawable = getDrawable(R.drawable.embarassed);
