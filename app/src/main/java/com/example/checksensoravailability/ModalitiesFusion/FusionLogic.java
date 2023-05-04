@@ -5,6 +5,8 @@ import android.app.Activity;
 import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
 import com.example.checksensoravailability.InputHeartBeat.HeartBeatData;
 import com.example.checksensoravailability.InputProsody.ProsodyData;
+import com.example.checksensoravailability.ModalitiesFission.Fission;
+import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
 
 public class FusionLogic
 {
@@ -14,6 +16,8 @@ public class FusionLogic
     private PersistenceLogic persistenceLogic;
     private Activity mainActivity;
     private Fusion fusion;
+    private FissionLogic fissionLogic;
+    private Fission fission;
 
     public FusionLogic(Activity mainActivity, Fusion fusion, HeartBeatData heartData, ProsodyData prosodyData, FusionData fusionData, PersistenceLogic persistenceLogic)
     {
@@ -119,7 +123,6 @@ public class FusionLogic
                     fusion.getAmplitude(),
                     fusionData.getLevel());
             fusionData.setAuc(fusionProcess);
-
         }
         else // Tohsaka
         {

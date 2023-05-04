@@ -1,16 +1,18 @@
 package com.example.checksensoravailability.ModalitiesFusion;
 
+import com.example.checksensoravailability.ModalitiesFission.Fission;
+
 public class Fusion
 {
     private int heartBeat = 0;
     private float pitch = 0;
     private float amplitude = 0;
-
     private float noise = 0;
+    private Fission fission;
 
-    public Fusion()
+    public Fusion(Fission fission)
     {
-
+        this.fission = fission;
     }
 
     public Fusion(int heartBeat, float pitch, float amplitude, float noise)
@@ -36,6 +38,7 @@ public class Fusion
 
     public void setHeartBeat(int heartBeat) {
         this.heartBeat = heartBeat;
+        fission.setHeartBeat(heartBeat);
     }
 
     public float getPitch() {
@@ -44,6 +47,7 @@ public class Fusion
 
     public void setPitch(float pitch) {
         this.pitch = pitch;
+        fission.setPitch(pitch);
     }
 
     public float getAmplitude() {
@@ -52,6 +56,7 @@ public class Fusion
 
     public void setAmplitude(float amplitude) {
         this.amplitude = amplitude;
+        fission.setAmplitude(amplitude);
     }
 
 
@@ -61,11 +66,13 @@ public class Fusion
 
     public void setNoise(float noise) {
         this.noise = noise;
+        fission.setNoise(noise);
     }
 
     public void setHeartModality(float heartbeat)
     {
         setHeartBeat((int) heartbeat);
+        fission.setHeartBeat((int) heartbeat);
     }
 
 
