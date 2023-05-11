@@ -8,6 +8,7 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -28,6 +29,8 @@ import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 import com.example.checksensoravailability.ModalitiesFusion.FusionData;
 import com.example.checksensoravailability.ModalitiesFusion.FusionLogic;
 import com.example.checksensoravailability.databinding.ActivityMainBinding;
+
+import java.io.IOException;
 
 
 public class MainActivity extends Activity
@@ -55,7 +58,8 @@ public class MainActivity extends Activity
     private Fission fission;
     private RecyclerView myQueryView;
     private ActivityMainBinding binding;
-
+    private int buttonPressCount = 0;
+    private Boolean hasSpoken = false;
     /**
      * Function that handles the creation of the application
      *
@@ -76,7 +80,16 @@ public class MainActivity extends Activity
         fusionData = new FusionData();
         fusionData.setLevel("calm");
 
-        PersistenceLogic persistenceLogic = new PersistenceLogic();
+        PersistenceLogic persistenceLogic = null;
+        try
+        {
+            persistenceLogic = new PersistenceLogic();
+        }
+        catch (IOException e)
+        {
+            throw new RuntimeException(e);
+        }
+
         FissionLogic fissionLogic = new FissionLogic(getApplicationContext());
         ProsodyLogic prosodyLogic = new ProsodyLogic(this, prosodyData, fusion);
         dialogLogic = new DialogLogic(this, getApplicationContext(), fission, dialogData, fissionLogic, persistenceLogic);
@@ -118,8 +131,20 @@ public class MainActivity extends Activity
             @Override
             public boolean onLongClick(View view)
             {
-                // Change background
-                picState = !picState;
+                int relaxation_state = fission.getRelaxationState();
+                if(relaxation_state < 13 && relaxation_state > 0)
+                {
+                    if(relaxation_state % 2 == 0 && (fusion.getPitch() > 0 || hasSpoken))
+                    {
+                        hasSpoken = false;
+                        fission.setRelaxationState(relaxation_state-1);
+                    }
+                }
+                else
+                {
+                    // Change background
+                    picState = !picState;
+                }
                 return picState;
             }
         });
@@ -158,6 +183,7 @@ public class MainActivity extends Activity
         });
 
 
+
         imgSphinx.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -174,33 +200,40 @@ public class MainActivity extends Activity
         final int[] temporality = {0};
         Runnable runnable = new Runnable()
         {
+
             @Override
             public void run()
             {
 
-                System.out.println("fission.getRelaxationState() :" + fission.getRelaxationState());
+                int relaxation_state = fission.getRelaxationState();
+                System.out.println("fission.getRelaxationState() :" + relaxation_state);
                 System.out.println("temporality[0] :" + temporality[0]);
-                if(fission.getRelaxationState() < 13 && fission.getRelaxationState() > 0)
+                if(relaxation_state < 13 && relaxation_state > 0 && relaxation_state % 2 != 0)
                 {
                     temporality[0] = temporality[0] + 1;
 
                     if(temporality[0] % 4 == 0)
                     {
-                        fission.setRelaxationState(fission.getRelaxationState() - 1);
+                        fission.setRelaxationState(relaxation_state - 1);
                     }
                 }
-                else if (fission.getRelaxationState() == 0)
+                else if (relaxation_state < 13 && relaxation_state > 0 && relaxation_state % 2 == 0)
+                {
+                    if(fission.getPitch() > 0)
+                        hasSpoken = true;
+                }
+                else if (relaxation_state == 0)
                 {
                     fission.setRelaxationState(15);
                     dialogLogic.handleRelaxationResult();
                 }
-                else if (fission.getRelaxationState() == 14 && temporality[0] > 60)
+                else if (relaxation_state == 14 && temporality[0] > 50)
                 {
                     temporality[0] = 0;
                     fission.setRelaxationState(13);
                     dialogLogic.sphinxCall();
                 }
-                else if (fission.getRelaxationState() == 14)
+                else if (relaxation_state == 14)
                 {
                     temporality[0] = temporality[0] + 1;
                 }

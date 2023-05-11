@@ -1,17 +1,14 @@
 package com.example.checksensoravailability.DialogManagement;
 
-
 import java.util.ArrayList;
 
 public class DialogData
 {
-    // FIXED DATA
     private ArrayList<String> userQueryResult;
     private ArrayList<String> userRefinedQueryResult;
 
     private ArrayList<String> historyCommands;
     private ArrayList<String> historyResults;
-
 
     public DialogData()
     {
@@ -25,9 +22,7 @@ public class DialogData
         return userQueryResult;
     }
 
-    public void setUserQueryResult(ArrayList<String> userQueryResult) {
-        this.userQueryResult = userQueryResult;
-    }
+    public void setUserQueryResult(ArrayList<String> userQueryResult) { this.userQueryResult = userQueryResult; }
 
 
     public ArrayList<String> getUserRefinedQueryResult()
@@ -35,15 +30,19 @@ public class DialogData
         return userRefinedQueryResult;
     }
 
-    public void setUserRefinedQueryResult(ArrayList<String> userRafinedQueryResult)
-    {
-        this.userRefinedQueryResult = userRafinedQueryResult;
-    }
+    public void setUserRefinedQueryResult(ArrayList<String> userRafinedQueryResult) { this.userRefinedQueryResult = userRafinedQueryResult; }
 
 
     public ArrayList<String> getHistoryCommands() {
         return historyCommands;
     }
+
+
+    public ArrayList<String> getHistoryResults() {
+        return historyResults;
+    }
+
+    public void setHistoryResults(ArrayList<String> historyResults) { this.historyResults = historyResults;  }
 
     public void setHistoryCommands(ArrayList<String> historyCommands)
     {
@@ -54,13 +53,4 @@ public class DialogData
             System.out.println("\t\t\t " + command);
 
     }
-
-    public ArrayList<String> getHistoryResults() {
-        return historyResults;
-    }
-
-    public void setHistoryResults(ArrayList<String> historyResults) {
-        this.historyResults = historyResults;
-    }
-
 }

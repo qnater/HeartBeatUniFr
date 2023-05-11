@@ -77,7 +77,7 @@ public class FissionLogic implements TextToSpeech.OnInitListener
             case 1:
                 if (mediaPlayer.isPlaying())
                     mediaPlayer.stop();
-                mediaPlayer = MediaPlayer.create(applicationContext, R.raw.dcl);
+                mediaPlayer = MediaPlayer.create(applicationContext, R.raw.relax);
                 mediaPlayer.start();
                 break;
             case 2:
