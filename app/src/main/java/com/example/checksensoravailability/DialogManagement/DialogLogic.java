@@ -136,23 +136,6 @@ public class DialogLogic
     }
 
 
-    /**
-     * Handle the end of the relaxation result with speak and toast (value 15 == handling)
-     *
-     * @autor Quentin Nater
-     */
-    public void handleRelaxationResult()
-    {
-        if(fission.getRelaxationState() == 15)
-        {
-            Toast.makeText(recorderActivity.getApplicationContext(), "Result " + fission.getHeartBeat() + "bmps... 'Continue',  'Terminate' or 'Music' ?", Toast.LENGTH_LONG).show();
-
-            fissionLogic.speak_result("Your result is" + fission.getHeartBeat() +" ... Do you want to 'continue' or 'terminate' the session ? Do you want to listen 'relaxation music' ?");
-
-            fission.setRelaxationState(14);  // handle pause time for sphinx answer
-        }
-    }
-
 
     /**
      * Function that starts a recording of the user voice for storage

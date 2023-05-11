@@ -58,7 +58,6 @@ public class MainActivity extends Activity
     private RecyclerView myQueryView;
     private ActivityMainBinding binding;
     private int buttonPressCount = 0;
-    private Boolean hasSpoken = false;
 
     /**
      * Function that handles the creation of the application
@@ -91,11 +90,14 @@ public class MainActivity extends Activity
         }
 
         // set all modules of the project
-        FissionLogic fissionLogic = new FissionLogic(getApplicationContext());
+        DialogLogic first = new DialogLogic(this, getApplicationContext(), fission, dialogData, null, persistenceLogic);
+        FissionLogic fissionLogic = new FissionLogic(getApplicationContext(), fission, fusion, first);
         ProsodyLogic prosodyLogic = new ProsodyLogic(fusion);
         dialogLogic = new DialogLogic(this, getApplicationContext(), fission, dialogData, fissionLogic, persistenceLogic);
+        fissionLogic.setDialogLogic(dialogLogic);
         FusionLogic fusionLogic = new FusionLogic(fusion, heartData, prosodyData, fusionData, persistenceLogic);
         HeartBeatLogic heartBeatLogic = new HeartBeatLogic(this, getApplicationContext(), fusion, fusionLogic);
+
 
         // Initialize the activity
         binding = ActivityMainBinding.inflate(getLayoutInflater());
@@ -126,22 +128,17 @@ public class MainActivity extends Activity
            }
         });
 
-
         imgView.setOnLongClickListener(new View.OnLongClickListener()
         {
             @Override
             public boolean onLongClick(View view)
             {
-                // Draw the number on the screen for relaxation method
+                // Draw the number on the screen for relaxation method or change background
                 int relaxation_state = fission.getRelaxationState();
                 if(relaxation_state < 13 && relaxation_state > 0)
                 {
-                    // only with even number
-                    if(relaxation_state % 2 == 0 && (fusion.getPitch() > 0 || hasSpoken))
-                    {
-                        hasSpoken = false;
-                        fission.setRelaxationState(relaxation_state-1);
-                    }
+                    // call the logic for relaxation counting method (even number)
+                    fissionLogic.relaxationMethod(5);
                 }
                 else
                 {
@@ -151,7 +148,6 @@ public class MainActivity extends Activity
                 return picState;
             }
         });
-
 
         imgMic.setOnClickListener(new View.OnClickListener()
         {
@@ -183,8 +179,6 @@ public class MainActivity extends Activity
             }
         });
 
-
-
         imgSphinx.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -194,50 +188,15 @@ public class MainActivity extends Activity
             }
         });
 
-
         int refreshThreshold = 500;  // Handle refresh threshold of data
         Handler handler = new Handler();
-        final int[] temporality = {0};
+
         Runnable runnable = new Runnable() // change the display from fission and fusion data
         {
             @Override
             public void run()
             {
-                int relaxation_state = fission.getRelaxationState();
-                System.out.println("fission.getRelaxationState() :" + relaxation_state);
-                System.out.println("temporality[0] :" + temporality[0]);
-
-                // if the state has been reach, wait 2 seconds for displaying the number (odd number)
-                if(relaxation_state < 13 && relaxation_state > 0 && relaxation_state % 2 != 0)
-                {
-                    temporality[0] = temporality[0] + 1;
-
-                    if(temporality[0] % 4 == 0)
-                    {
-                        fission.setRelaxationState(relaxation_state - 1);
-                    }
-                }
-                else if (relaxation_state < 13 && relaxation_state > 0 && relaxation_state % 2 == 0)
-                {
-                    if(fission.getPitch() > 0)
-                        hasSpoken = true;
-                }
-                else if (relaxation_state == 0)
-                {
-                    fission.setRelaxationState(15);
-                    dialogLogic.handleRelaxationResult();
-                }
-                else if (relaxation_state == 14 && temporality[0] > 50)
-                {
-                    temporality[0] = 0;
-                    fission.setRelaxationState(13);
-                    dialogLogic.sphinxCall();
-                }
-                else if (relaxation_state == 14)
-                {
-                    temporality[0] = temporality[0] + 1;
-                }
-
+                fissionLogic.relaxationMethod(4); // handle all user modularity touch in relaxation method (odd number)
 
                 updateDisplay();
                 updateInteraction();

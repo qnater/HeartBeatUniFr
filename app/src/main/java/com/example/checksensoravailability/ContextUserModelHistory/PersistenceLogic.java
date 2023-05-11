@@ -22,10 +22,12 @@ public class PersistenceLogic
     {
         String timestamp = getCurrentTime();
 
+        // set the unique filename for database
         File extDir = Environment.getExternalStorageDirectory();
         String filename = timestamp + "-heartbeat_data_set.csv";
         File fullFilename = new File(extDir, filename);
 
+        // handle the creation/deletion of the file
         fullFilename.delete();
         fullFilename.createNewFile();
         fullFilename.setWritable(Boolean.TRUE);
