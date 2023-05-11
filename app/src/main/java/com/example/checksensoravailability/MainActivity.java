@@ -36,9 +36,8 @@ import java.io.IOException;
 public class MainActivity extends Activity
 {
     // =====================================================================
-    // Initializing all variables..
+    // Initializing all variables...
     private static final String TAG = "____Main___";
-
 
     // ==== Graphical objects ==============================================
     private TextView tbxHeartRate;
@@ -48,7 +47,7 @@ public class MainActivity extends Activity
     // ==== Display logic ==================================================
     private Boolean mode = false;
     private int state = 0;
-    private Boolean picState = true;
+    private Boolean picState = false;
 
     // ==== Logic as library ===============================================
     private FusionData fusionData;
@@ -60,6 +59,7 @@ public class MainActivity extends Activity
     private ActivityMainBinding binding;
     private int buttonPressCount = 0;
     private Boolean hasSpoken = false;
+
     /**
      * Function that handles the creation of the application
      *
@@ -81,7 +81,7 @@ public class MainActivity extends Activity
         fusionData.setLevel("calm");
 
         PersistenceLogic persistenceLogic = null;
-        try
+        try // security to reach the database
         {
             persistenceLogic = new PersistenceLogic();
         }
@@ -90,10 +90,11 @@ public class MainActivity extends Activity
             throw new RuntimeException(e);
         }
 
+        // set all modules of the project
         FissionLogic fissionLogic = new FissionLogic(getApplicationContext());
-        ProsodyLogic prosodyLogic = new ProsodyLogic(this, prosodyData, fusion);
+        ProsodyLogic prosodyLogic = new ProsodyLogic(fusion);
         dialogLogic = new DialogLogic(this, getApplicationContext(), fission, dialogData, fissionLogic, persistenceLogic);
-        FusionLogic fusionLogic = new FusionLogic(this, fusion, heartData, prosodyData, fusionData, persistenceLogic);
+        FusionLogic fusionLogic = new FusionLogic(fusion, heartData, prosodyData, fusionData, persistenceLogic);
         HeartBeatLogic heartBeatLogic = new HeartBeatLogic(this, getApplicationContext(), fusion, fusionLogic);
 
         // Initialize the activity
@@ -111,7 +112,7 @@ public class MainActivity extends Activity
         prosodyLogic.extractFeatures();
 
         // ========================================================================================
-        // LISTERNER OF GRAPHICAL OBJECTS
+        // LISTENER OF GRAPHICAL OBJECTS
         imgView.setOnClickListener(new View.OnClickListener()
         {
            @Override
@@ -131,9 +132,11 @@ public class MainActivity extends Activity
             @Override
             public boolean onLongClick(View view)
             {
+                // Draw the number on the screen for relaxation method
                 int relaxation_state = fission.getRelaxationState();
                 if(relaxation_state < 13 && relaxation_state > 0)
                 {
+                    // only with even number
                     if(relaxation_state % 2 == 0 && (fusion.getPitch() > 0 || hasSpoken))
                     {
                         hasSpoken = false;
@@ -160,10 +163,9 @@ public class MainActivity extends Activity
 
                 Drawable drawable;
 
-                if (mode)
+                if (mode)  // change the mode (if the watch is speaking the result loud or not)
                 {
                     Log.d(TAG, "START RECORDING___");
-                    //dialogLogic.startRecording();
                     fission.setAudion_on(false);
                     drawable = getDrawable(R.drawable.close_mic);
                     imgMic.setImageDrawable(drawable);
@@ -172,7 +174,6 @@ public class MainActivity extends Activity
                 else
                 {
                     Log.d(TAG, "STOP RECORDING___");
-                    //dialogLogic.pauseRecording();
                     fission.setAudion_on(true);
                     fissionLogic.speak_result("Fission Audion On ! Welcome to anger detection !");
                     drawable = getDrawable(R.drawable.open_mic);
@@ -189,25 +190,24 @@ public class MainActivity extends Activity
             @Override
             public void onClick(View v)
             {
-                dialogLogic.sphinxCall();
+                dialogLogic.sphinxCall();  // register the voice of the user
             }
         });
 
 
-        // Handle refresh threshold of data
-        int refreshThreshold = 500;
+        int refreshThreshold = 500;  // Handle refresh threshold of data
         Handler handler = new Handler();
         final int[] temporality = {0};
-        Runnable runnable = new Runnable()
+        Runnable runnable = new Runnable() // change the display from fission and fusion data
         {
-
             @Override
             public void run()
             {
-
                 int relaxation_state = fission.getRelaxationState();
                 System.out.println("fission.getRelaxationState() :" + relaxation_state);
                 System.out.println("temporality[0] :" + temporality[0]);
+
+                // if the state has been reach, wait 2 seconds for displaying the number (odd number)
                 if(relaxation_state < 13 && relaxation_state > 0 && relaxation_state % 2 != 0)
                 {
                     temporality[0] = temporality[0] + 1;

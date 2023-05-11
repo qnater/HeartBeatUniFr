@@ -1,20 +1,6 @@
 package com.example.checksensoravailability.InputProsody;
 
-import static android.app.Activity.RESULT_OK;
-
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Environment;
-import android.speech.RecognizerIntent;
-import android.util.Log;
-
-import androidx.annotation.Nullable;
-
-import com.example.checksensoravailability.DialogManagement.DialogLogic;
 import com.example.checksensoravailability.ModalitiesFusion.Fusion;
-
-import java.util.ArrayList;
-
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;
@@ -26,17 +12,10 @@ import be.tarsos.dsp.util.fft.FFT;
 
 public class ProsodyLogic
 {
-    private ProsodyData prosodyData;
-    private Activity mainActivity;
-    protected static final int RESULT_SPEECH = 1;
-    private static final String TAG = "ProsodyLogic";
     private Fusion fusion;
 
-
-    public ProsodyLogic(Activity mainActivity, ProsodyData prosodyData, Fusion fusion)
+    public ProsodyLogic(Fusion fusion)
     {
-        this.mainActivity = mainActivity;
-        this.prosodyData = prosodyData;
         this.fusion = fusion;
     }
 
@@ -47,62 +26,49 @@ public class ProsodyLogic
      */
     public void extractFeatures()
     {
+        // set the base of the audio dispatcher for the prosody
         AudioDispatcher dispatcher = AudioDispatcherFactory.fromDefaultMicrophone(22050,1024,0);
+
         PitchDetectionHandler pdh = new PitchDetectionHandler()
         {
             @Override
             public void handlePitch(PitchDetectionResult res, AudioEvent e)
             {
-                final float pitchInHz = res.getPitch();
-                final float pitchNoise = res.getProbability();
-                final float[] amp = {0};
-                final float[] amplitudes = new float[e.getBufferSize()];
+                final float pitchInHz = res.getPitch();         // get the pitch (Hz) from the result
+                final float pitchNoise = res.getProbability();  // get the noise (%) from the result
+                final float[] amp = {0};                        // get the first information about brut amplitude
+                final float[] amplitudes = new float[e.getBufferSize()]; // get information to mine amplitude
 
 
-                float[] audioFloatBuffer = e.getFloatBuffer();
+                float[] audioFloatBuffer = e.getFloatBuffer(); // set the buffer of the sound
                 float[] transformBuffer = new float[e.getBufferSize() * 2];
-                FFT fft = new FFT(e.getBufferSize());
+                FFT fft = new FFT(e.getBufferSize());  // set the object to extract the amplitude from the raw sound
                 System.arraycopy(audioFloatBuffer, 0, transformBuffer, 0, audioFloatBuffer.length);
-                fft.forwardTransform(transformBuffer);
-                fft.modulus(transformBuffer, amplitudes);
+                fft.forwardTransform(transformBuffer);  // transform the raw sound
+                fft.modulus(transformBuffer, amplitudes); // set the modulus of the  sound
 
                 for (int index = 0; index < amplitudes.length; index++)
                 {
-                    if (amplitudes[index] > amp[0])
+                    if (amplitudes[index] > amp[0]) // get the amplitude
                     {
-                        amp[0] = amplitudes[index];
+                        amp[0] = amplitudes[index]; // set the result
                     }
                 }
 
-                int pitch = (int) pitchInHz;
-                int amplitude = (int) amp[0];
-                float noise = ((1-pitchNoise)*100);
+                int pitch = (int) pitchInHz; // cast the pitch
+                int amplitude = (int) amp[0];  // cast the amplitude
+                float noise = ((1-pitchNoise)*100); // get the noise %
 
-                fusion.setProsodyModality(pitch, amplitude, noise);
-
-                /*
-                mainActivity.runOnUiThread(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        prosodyData.setPitch((int) pitchInHz);
-                        prosodyData.setAmplitude((int) amp[0]);
-                        prosodyData.setNoise(((1-pitchNoise)*100));
-                    }
-                });
-                */
-
+                fusion.setProsodyModality(pitch, amplitude, noise); // send the value for the fusion with heart beat
             }
         };
+
+        // set the processor for the pitch
         AudioProcessor pitchProcessor = new PitchProcessor(PitchProcessor.PitchEstimationAlgorithm.FFT_YIN, 22050, 1024, pdh);
         dispatcher.addAudioProcessor(pitchProcessor);
 
+        // launch the thread in the for prosody modality.
         Thread audioThread = new Thread(dispatcher, "Audio Thread");
         audioThread.start();
     }
-
-
-
-
 }

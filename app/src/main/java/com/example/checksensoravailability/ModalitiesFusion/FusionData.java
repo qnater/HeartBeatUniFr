@@ -15,7 +15,6 @@ public class FusionData
         this.level = level;
     }
 
-
     public float getAuc()
     {
         return auc;

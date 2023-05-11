@@ -378,6 +378,7 @@ public class DialogLogic
             System.out.println("**COMMANDS : " + " Run a history command");
             ArrayList<String> historyCommand = dialogData.getHistoryCommands();
 
+            // get which command the user want to redo (last ? first ? Xrd ?)
             int num = 0;
             if(userCommand.contains("last"))
                 num = historyCommand.size() - 1;
@@ -387,16 +388,18 @@ public class DialogLogic
                 num = interpret_number(userCommand);
 
             System.out.println("****COMMANDS : historyCommand.get("+num+").split(;)[1]");
+
+            // get the desired command in the array (skip the timestamp [0])
             String desiredCommand = historyCommand.get(num).split(";")[1];
 
-            if(!desiredCommand.equals(""))
+            if(!desiredCommand.equals(""))  // real command ?
             {
                 System.out.println("Desired command run");
 
                 if(fission.getAudion_on())
                     fissionLogic.speak_result("Desired command run " + desiredCommand);
 
-                commandUser(desiredCommand);
+                commandUser(desiredCommand); // run the command
             }
             else
             {
@@ -428,29 +431,39 @@ public class DialogLogic
             fissionLogic.speak_result("The query " + command + " has been passed successfully");
     }
 
+
+    /**
+     * Get the number inside the command the get a value cast as integer
+     *
+     * @param userCommand String - Value of the user command
+     * @autor Quentin Nater
+     */
     private int interpret_number(String userCommand)
     {
         System.out.println("****COMMANDS : interpret_number = " + userCommand);
 
         int num = 0;
 
-        String[] words = userCommand.split(" ");
+        String[] words = userCommand.split(" ");  // each word of the user command
 
-        for (int i = 0; i < words.length; i++) {
-            if (words[i].matches("\\d+")) {
+        for (int i = 0; i < words.length; i++)
+        {
+            if (words[i].matches("\\d+"))   // if it is a number (integer)
+            {
                 num = Integer.parseInt(words[i]);
                 break;
             }
         }
         System.out.println("The number is: " + num);
 
-        if (num > 25)
+        if (num > 25)  // if it is to much, reduce to 25
             num = 25;
 
         return num;
     }
 
     /**
+     * Handle every command and get last angry times and handle the database
      *
      * @param num : int - number of line to display
      * @param to_display : int 1=level / 2=heart / 3=pitch / 4=amplitude / 5=noise / 6=auc
@@ -459,70 +472,78 @@ public class DialogLogic
     {
         System.out.println("****COMMANDS : interpret_dialog_for_database = " + num + " / " + to_display);
 
-        ArrayList<String> result = persistenceLogic.getLastAngry(num);
+        ArrayList<String> result = persistenceLogic.getLastAngry(num);  // get the result of angry times
         ArrayList<String> refinedResult = new ArrayList<>();
 
-
-        for (String stressLine : result)
+        for (String stressLine : result)  // for each angry time
         {
             System.out.println("LOG REPORT : " + stressLine);
 
             String[] fields = stressLine.split(",");
 
+            // get the date of the angry time and the % of the AI
             String date = fields[0];
             String value = fields[to_display];
 
+            // Format the date
             String[] dateDetails = date.split("-");
             String month = dateDetails[1];
             String day = dateDetails[2];
             String hour = dateDetails[3];
             String minute = dateDetails[4];
 
+            // Final result to display
             refinedResult.add(day+"."+month + " at " + hour+ ":"+ minute + " = " + value);
         }
 
-        dialogData.setUserQueryResult(result);
-        dialogData.setUserRefinedQueryResult(refinedResult);
+        dialogData.setUserQueryResult(result);  // save the result for history
+        dialogData.setUserRefinedQueryResult(refinedResult);  // save the final result for history
 
-
+        if(fission.getAudion_on())  // speak the result
+            fissionLogic.speak_result("The query has been passed successfully");
     }
 
 
     /**
-     *
+     * Handle every command and get last angry times (by date) and handle the database
      * @param num : int - number of line to display
+     * @param type String - Search by "yesterday", "hour" or "last_hour"
+     * @param number String - if needed the specific day or hour
      * @param to_display : int 1=level / 2=heart / 3=pitch / 4=amplitude / 5=noise / 6=auc
      */
     private void interpret_dialog_for_database_by_date(int num, String type, String number, int to_display)
     {
         System.out.println("****COMMANDS : interpret_dialog_for_database_by_date = " + num + " / " + to_display + " / " + type + " / " + number);
 
-        ArrayList<String> result = persistenceLogic.getLastAngryByDate(10, type, number);
+        ArrayList<String> result = persistenceLogic.getLastAngryByDate(10, type, number);   // get the result of angry times
         ArrayList<String> refinedResult = new ArrayList<>();
 
 
-        for (String stressLine : result)
+        for (String stressLine : result)   // for each angry time
         {
             System.out.println("LOG REPORT : " + stressLine);
 
             String[] fields = stressLine.split(",");
 
+            // get the date of the angry time and the desired value
             String date = fields[0];
             String value = fields[to_display];
 
+            // Format the date
             String[] dateDetails = date.split("-");
             String month = dateDetails[1];
             String day = dateDetails[2];
             String hour = dateDetails[3];
             String minute = dateDetails[4];
 
+            // Final result to display
             refinedResult.add(day+"."+month + " at " + hour+ ":"+ minute + " = " + value);
         }
 
-        dialogData.setUserQueryResult(result);
-        dialogData.setUserRefinedQueryResult(refinedResult);
+        dialogData.setUserQueryResult(result);  // save the result for history
+        dialogData.setUserRefinedQueryResult(refinedResult);  // save the final result for history
 
-        if(fission.getAudion_on())
+        if(fission.getAudion_on())  // speak the result
             fissionLogic.speak_result("The date query has been passed successfully");
     }
 
@@ -559,14 +580,17 @@ public class DialogLogic
     {
         switch (request)
         {
-            case RESULT_SPEECH:
+            case RESULT_SPEECH:  // result of speech request
                 if (code == RESULT_OK && data != null)
                 {
+                    // get the value of the voice
                     ArrayList<String> text = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
 
+                    // get the value of the text
                     String userCommand = text.get(0);
                     Log.d(TAG, "Sphinx get : " + userCommand);
 
+                    // start to analyze the text of the user voice
                     commandUser(userCommand);
                 }
                 break;
@@ -586,19 +610,18 @@ public class DialogLogic
     {
         switch (requestCode)
         {
-            case REQUEST_AUDIO_PERMISSION_CODE:
+            case REQUEST_AUDIO_PERMISSION_CODE: // if the user asked for audio permission
                 if (grantResults.length > 0)
                 {
+                    // both permission needed
                     boolean permissionToRecord = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     boolean permissionToStore = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+
+                    // display the result
                     if (permissionToRecord && permissionToStore)
-                    {
                         Toast.makeText(recorderActivity.getApplicationContext(), "Permission Granted", Toast.LENGTH_LONG).show();
-                    }
                     else
-                    {
                         Toast.makeText(recorderActivity.getApplicationContext(), "Permission Denied", Toast.LENGTH_LONG).show();
-                    }
                 }
                 break;
         }
@@ -625,8 +648,7 @@ public class DialogLogic
      */
     private void RequestPermissions()
     {
-        // this method is used to request the
-        // permission for audio recording and storage.
+        // permission for audio recording and storage
         ActivityCompat.requestPermissions(recorderActivity, new String[]{RECORD_AUDIO, WRITE_EXTERNAL_STORAGE}, REQUEST_AUDIO_PERMISSION_CODE);
     }
 }

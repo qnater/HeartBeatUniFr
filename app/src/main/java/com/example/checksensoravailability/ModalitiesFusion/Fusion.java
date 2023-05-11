@@ -75,7 +75,6 @@ public class Fusion
         fission.setHeartBeat((int) heartbeat);
     }
 
-
     public void setProsodyModality(float pitch, float amplitude, float noise)
     {
         setPitch(pitch);

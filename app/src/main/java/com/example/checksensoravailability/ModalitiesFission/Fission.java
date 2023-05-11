@@ -4,15 +4,11 @@ import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 
 public class Fission
 {
-
-
     private int heartBeat = 0;
     private float pitch = 0;
     private float amplitude = 0;
     private float noise = 0;
-
     private Boolean audion_on = false;
-
     private int relaxationState = 13;
 
     public Fission()
@@ -65,8 +61,6 @@ public class Fission
     {
         this.audion_on = audion_on;
     }
-
-
 
     public Boolean getAudion_on() {
         return audion_on;

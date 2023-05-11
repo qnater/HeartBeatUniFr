@@ -18,20 +18,9 @@ public class HeartBeatData
     {
         return calmnessHeartBeat;
     }
-
-    public void setCalmnessHeartBeat(int calmnessHeartBeat)
-    {
-        this.calmnessHeartBeat = calmnessHeartBeat;
-    }
-
     public int getAngerHeartBeat()
     {
         return angerHeartBeat;
-    }
-
-    public void setAngerHeartBeat(int angerHeartBeat)
-    {
-        this.angerHeartBeat = angerHeartBeat;
     }
 
 

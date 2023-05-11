@@ -14,24 +14,28 @@ import java.util.Locale;
 
 public class FissionLogic implements TextToSpeech.OnInitListener
 {
-
     private Context applicationContext;
     private MediaPlayer mediaPlayer;
-
     private TextToSpeech tts;
-
 
     public FissionLogic(Context applicationContext)
     {
         this.applicationContext = applicationContext;
 
+        // prepare the music of the watch to relax the user.
         mediaPlayer = MediaPlayer.create(applicationContext, R.raw.dcl);
 
+        // prepare the text speech of the watch to speak to the user.
         tts = new TextToSpeech(applicationContext, this);
-
     }
 
 
+    /**
+     * On initialization of the fission, preparation of speech and language analysis
+     * @param status - int result of the speech initialization
+     *
+     * @autor Quentin Nater
+     */
     @Override
     public void onInit(int status)
     {
@@ -39,8 +43,9 @@ public class FissionLogic implements TextToSpeech.OnInitListener
 
         if (status == TextToSpeech.SUCCESS)
         {
-            int result = tts.setLanguage(Locale.getDefault());
+            int result = tts.setLanguage(Locale.getDefault());  // set the english language
 
+            // display information in case of problem
             if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED)
             {
                 Toast.makeText(applicationContext, "Language not supported", Toast.LENGTH_SHORT).show();
@@ -48,15 +53,24 @@ public class FissionLogic implements TextToSpeech.OnInitListener
         }
     }
 
-
+    /**
+     * Dictate a sentence by the watch
+     * @param text - String text to make the watch speak
+     *
+     * @autor Quentin Nater
+     */
     public void speak_result(String text)
     {
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, null);
     }
 
+    /**
+     * run on the destruction of the class to stop the text to speak.
+     *
+     * @autor Quentin Nater
+     */
     protected void onDestroy()
     {
-
         if (tts != null) {
             // Release the Text-To-Speech engine resources
             tts.stop();
@@ -65,14 +79,14 @@ public class FissionLogic implements TextToSpeech.OnInitListener
     }
 
     /**
-     * Function that called pre-defined relaxation method of psychology
+     * Function that run a relaxation method chosen by the user
      *
      * @param played int - Which type of music or relaxation method will be played
      * @autor Quentin Nater
      */
     public void relaxationMethod(int played)
     {
-        switch (played)
+        switch (played)  // play the chosen music
         {
             case 1:
                 if (mediaPlayer.isPlaying())
@@ -98,5 +112,4 @@ public class FissionLogic implements TextToSpeech.OnInitListener
                 break;
         }
     }
-
 }

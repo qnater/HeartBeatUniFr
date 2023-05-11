@@ -7,6 +7,11 @@ import com.example.checksensoravailability.databinding.RecyclerviewItemBinding;
 
 import java.util.ArrayList;
 
+/**
+ * Adapter for displaying the result of the query on a view holder
+ *
+ * @autor Quentin Nater
+ */
 public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.ViewHolder >
 {
     private ArrayList<String> mDataList;
@@ -16,6 +21,11 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Vi
         mDataList = dataList;
     }
 
+    /**
+     * Create the layout the the recycler view based on the xml file
+     *
+     * @autor Quentin Nater
+     */
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType)
     {
@@ -25,6 +35,11 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Vi
     }
 
 
+    /**
+     * Bind the text of each line of the view holder
+     *
+     * @autor Quentin Nater
+     */
     @Override
     public void onBindViewHolder(ViewHolder holder, int position)
     {
@@ -32,12 +47,22 @@ public class ViewHolderAdapter extends RecyclerView.Adapter<ViewHolderAdapter.Vi
         holder.binding.myDisplayLine.setText(itemText);
     }
 
+    /**
+     * To get the size of the data (number of line in the view holder)
+     *
+     * @autor Quentin Nater
+     */
     @Override
     public int getItemCount()
     {
         return mDataList.size();
     }
 
+    /**
+     * To bind the view holder with the root of the main layout of the project
+     *
+     * @autor Quentin Nater
+     */
     public static class ViewHolder extends RecyclerView.ViewHolder
     {
         RecyclerviewItemBinding binding;
