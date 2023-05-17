@@ -3,6 +3,7 @@
 
 ## Installation
 To install and use the application, you will need :
+
 1) To install the Android Studio (for instance : Android Studio Electric Eel | 2022.1.1 Patch 2) and have a Samsung Smartwatch (for instance XXXX)
 2) To clone this repository on a directory
 3) To open a terminal
@@ -24,22 +25,42 @@ In the same time, the background will change depending on your current emotional
 ### Interaction with the user
 By speaking, the user will be able to ask many things to the watch application.
 1) The user can asked to display the last X times he/she was angry.
-    command : **_Please watch, get the 3 last times I was angry._**
+
+    '''command : **_Please watch, get the 3 last times I was angry._**'''
+    
 2) The user can asked to display the last times he/she was angry which a filter by date.
+
     command : **_Please watch, display with date when I was angry in the last hour._**
     command : **_Please watch, display with date when I was angry at 4._**
     command : **_Please watch, display with date when I was angry yesterday._**
+    
+    
 3) The user can asked to display the history command asked for example the last one or the 2nd one.
+    
     command : **_Please watch, display the history of the command 2_**
+    
+    
 4) The user can asked to change the value of the variables/values displayed in the last command.
+    
     command : **_Please watch, take the results of the command and change percentage by pitch_**
+    
+    
 5) The user can asked to start relaxation method as for example counting techniques with multimodal output (touch + voice)
+    
     command : **_Please watch, start a method to decrease my anger_**
+    
+    
 6) The user can asked to start relaxation method as music to calm down.
+    
     command : **_Please watch, play some relaxation music_**
     command : **_Please watch, stop the music_**
+    
+    
 7) The user can asked clean the result display or change them.
+   
     command : **_Please watch, clean the result_**
+    
+    
     
 Finally a construct conversation will stand between the user and the watch after action. The watch (if the option is on) will say every result aloud to the user and asked him/her what he/she wants to do after an action.
 Example : 
