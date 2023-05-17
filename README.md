@@ -134,5 +134,9 @@ With this detection, relaxation methods (counting and music) can be launch by th
 ## Log and data
 The data can be reached at anytime by the user because it is stored in the database in real time. The data stored are the timestamp, the emtional state, the heartbeat , the pitch, the amplitude, the noise and the auc. The DB is reachable if the inner directory of the watch "./storage/0/heartbeat_data_set.csv"
 
+## User guide and demo
+The user guide and demo can be reached from this video : HHHH
+<iframe width="560" height="315" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+
 
 
