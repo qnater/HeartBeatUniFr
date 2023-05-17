@@ -29,6 +29,7 @@ By speaking, the user will be able to ask many things to the watch application.
     user command : 
     ```
     Please watch, get the 3 last times I was angry.
+    Please watch, clean the result.
     ```
     
 2) The user can asked to display the last times he/she was angry which a filter by date.
@@ -38,6 +39,7 @@ By speaking, the user will be able to ask many things to the watch application.
     Please watch, display with date when I was angry in the last hour.
     Please watch, display with date when I was angry at 4.
     Please watch, display with date when I was angry yesterday.
+    Please watch, clean the result.
     ```
     
     
