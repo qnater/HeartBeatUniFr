@@ -8,7 +8,6 @@ import android.os.Handler;
 import android.os.Vibrator;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
@@ -33,6 +32,11 @@ import com.example.checksensoravailability.databinding.ActivityMainBinding;
 import java.io.IOException;
 
 
+/**
+ * Anger Detection
+ * This project is directed by the University of Fribourg in the context of the course FS2023: 03035/33035 Multimodal User Interfaces
+ * Matilde De Luigi / Quentin Nater
+ */
 public class MainActivity extends Activity
 {
     // =====================================================================
