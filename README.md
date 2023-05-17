@@ -4,7 +4,7 @@
 ## Installation
 To install and use the application, you will need :
 
-1) To install the Android Studio (for instance : Android Studio Electric Eel | 2022.1.1 Patch 2) and have a Samsung Smartwatch (for instance XXXX)
+1) To install the Android Studio (for instance : Android Studio Electric Eel | 2022.1.1 Patch 2) and have a Samsung Smartwatch (for instance Galaxy Watch4 (LC9T))
 2) To clone this repository on a directory
 3) To open a terminal
 4) To go on ./CheckSensorAvailability/abd
