@@ -26,7 +26,7 @@ In the same time, the background will change depending on your current emotional
 By speaking, the user will be able to ask many things to the watch application.
 1) The user can asked to display the last X times he/she was angry.
 
-    ```command : **_Please watch, get the 3 last times I was angry._**```
+    command : ```**_Please watch, get the 3 last times I was angry._**
     
 2) The user can asked to display the last times he/she was angry which a filter by date.
 
