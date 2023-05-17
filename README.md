@@ -105,7 +105,7 @@ Example :
     
    watch:
     ```
-    Result 82 bmps... Do you want to 'continue' or 'terminate' the session ? Do you want to listen 'relaxation music' ?
+    Your results are 82 bmps... Do you want to 'continue' or 'terminate' the session ? Do you want to listen 'relaxation music' ?
     ```
     
     
