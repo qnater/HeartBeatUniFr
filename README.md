@@ -53,7 +53,7 @@ By speaking, the user will be able to ask many things to the watch application.
     
     user command : 
     ```
-    Please watch, take the results of the command and change percentage by pitch.
+    Please watch, take the results of the command and replace percentage by pitch.
     ```
     
     
