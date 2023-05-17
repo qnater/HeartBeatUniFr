@@ -2,17 +2,18 @@ package com.example.checksensoravailability.ModalitiesFission;
 
 import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 
+/**
+ * Anger Detection
+ * This project is directed by the University of Fribourg in the context of the course FS2023: 03035/33035 Multimodal User Interfaces
+ * Matilde De Luigi / Quentin Nater
+ */
 public class Fission
 {
-
-
     private int heartBeat = 0;
     private float pitch = 0;
     private float amplitude = 0;
     private float noise = 0;
-
     private Boolean audion_on = false;
-
     private int relaxationState = 13;
 
     public Fission()
@@ -65,8 +66,6 @@ public class Fission
     {
         this.audion_on = audion_on;
     }
-
-
 
     public Boolean getAudion_on() {
         return audion_on;

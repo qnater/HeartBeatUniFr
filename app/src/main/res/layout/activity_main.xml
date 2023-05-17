@@ -8,6 +8,7 @@
     tools:context=".MainActivity"
     tools:deviceIds="wear">
 
+
     <ImageView
         android:id="@+id/imgBackground"
         android:layout_width="wrap_content"
@@ -64,9 +65,6 @@
                 android:adjustViewBounds="false"
                 android:cropToPadding="true"
                 android:src="@drawable/close_mic" />
-
         </TableRow>
-
-
     </FrameLayout>
 </androidx.wear.widget.BoxInsetLayout>

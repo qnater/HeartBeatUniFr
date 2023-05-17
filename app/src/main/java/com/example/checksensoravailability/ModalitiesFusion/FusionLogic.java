@@ -1,27 +1,24 @@
 package com.example.checksensoravailability.ModalitiesFusion;
 
-import android.app.Activity;
-
 import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
 import com.example.checksensoravailability.InputHeartBeat.HeartBeatData;
 import com.example.checksensoravailability.InputProsody.ProsodyData;
-import com.example.checksensoravailability.ModalitiesFission.Fission;
-import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
 
+/**
+ * Anger Detection
+ * This project is directed by the University of Fribourg in the context of the course FS2023: 03035/33035 Multimodal User Interfaces
+ * Matilde De Luigi / Quentin Nater
+ */
 public class FusionLogic
 {
     private HeartBeatData heartData;
     private ProsodyData prosodyData;
     private FusionData fusionData;
     private PersistenceLogic persistenceLogic;
-    private Activity mainActivity;
     private Fusion fusion;
-    private FissionLogic fissionLogic;
-    private Fission fission;
 
-    public FusionLogic(Activity mainActivity, Fusion fusion, HeartBeatData heartData, ProsodyData prosodyData, FusionData fusionData, PersistenceLogic persistenceLogic)
+    public FusionLogic(Fusion fusion, HeartBeatData heartData, ProsodyData prosodyData, FusionData fusionData, PersistenceLogic persistenceLogic)
     {
-        this.mainActivity = mainActivity;
         this.fusion = fusion;
         this.heartData = heartData;
         this.prosodyData = prosodyData;
@@ -43,14 +40,15 @@ public class FusionLogic
     {
         int result = 0;
 
-        if(level.equals("calm"))
+        if(level.equals("calm")) // if the level detected is calm
         {
+            // ALL VALUES
             if (heatBeat < heartData.getCalmnessHeartBeat() && pitch < prosodyData.getCalmnessPitch() && amplitude < prosodyData.getCalmnessAmplitude())
                 result = 100;
         }
-        else if (level.equals("stress"))
+        else if (level.equals("stress")) // if the level detected is stress
         {
-            // ALL
+            // ALL VALUES
             if ((heatBeat >= heartData.getCalmnessHeartBeat() && heatBeat < heartData.getAngerHeartBeat()) && (pitch >= prosodyData.getCalmnessPitch() && pitch <  prosodyData.getAngerPitch()) && (amplitude >= prosodyData.getCalmnessAmplitude() && amplitude < prosodyData.getAngerAmplitude()))
                 result = 100;
 
@@ -82,8 +80,9 @@ public class FusionLogic
             else
                 result = 50;
         }
-        else if (level.equals("anger"))
+        else if (level.equals("anger"))  // if the level detected is anger
         {
+            // ALL VALUES
             if (heatBeat >= heartData.getAngerHeartBeat() && pitch >= prosodyData.getAngerPitch() && amplitude >= prosodyData.getAngerAmplitude())
                 result = 100;
         }
@@ -102,32 +101,36 @@ public class FusionLogic
      */
     public void sensorLogicProcessing()
     {
-
-        if (fusion.getHeartBeat() < heartData.getCalmnessHeartBeat() && fusion.getPitch() < prosodyData.getCalmnessPitch()  && fusion.getAmplitude() < prosodyData.getCalmnessAmplitude())  // Ereshkigal
+        // if the condition is calm
+        if (fusion.getHeartBeat() < heartData.getCalmnessHeartBeat() && fusion.getPitch() < prosodyData.getCalmnessPitch()  && fusion.getAmplitude() < prosodyData.getCalmnessAmplitude())
         {
-            fusionData.setLevel("calm");
+            fusionData.setLevel("calm");  // set the level to calm
 
+            // calculate the percentage result that calm is the right level
+            float fusionProcess = fusion_result((int)fusion.getHeartBeat(),
+                    fusion.getPitch(),
+                    fusion.getAmplitude(),
+                    fusionData.getLevel());
+
+            // set the result
+            fusionData.setAuc(fusionProcess);
+        }
+        else if (fusion.getHeartBeat() >= heartData.getAngerHeartBeat() && fusion.getPitch() >= prosodyData.getAngerPitch() && fusion.getAmplitude() >= prosodyData.getAngerAmplitude())
+        {
+            fusionData.setLevel("anger");  // set the level to anger
+
+            // calculate the percentage result that anger is the right level
             float fusionProcess = fusion_result((int)fusion.getHeartBeat(),
                     fusion.getPitch(),
                     fusion.getAmplitude(),
                     fusionData.getLevel());
             fusionData.setAuc(fusionProcess);
-
         }
-        else if (fusion.getHeartBeat() >= heartData.getAngerHeartBeat() && fusion.getPitch() >= prosodyData.getAngerPitch() && fusion.getAmplitude() >= prosodyData.getAngerAmplitude()) // Eriri
+        else
         {
-            fusionData.setLevel("anger");
+            fusionData.setLevel("stress"); // set the level to stress
 
-            float fusionProcess = fusion_result((int)fusion.getHeartBeat(),
-                    fusion.getPitch(),
-                    fusion.getAmplitude(),
-                    fusionData.getLevel());
-            fusionData.setAuc(fusionProcess);
-        }
-        else // Tohsaka
-        {
-            fusionData.setLevel("stress");
-
+            // calculate the percentage result that stress is the right level
             float fusionProcess = fusion_result((int)fusion.getHeartBeat(),
                     fusion.getPitch(),
                     fusion.getAmplitude(),
@@ -143,6 +146,7 @@ public class FusionLogic
         System.out.println("Multimodal value - LEVEL       : \t" + fusionData.getLevel());
         System.out.println("Multimodal value - AUC         : \t" + fusionData.getAuc() + "%");
 
+        // write the result in the database
         persistenceLogic.writeDataset((int)fusion.getHeartBeat(),
                 fusion.getPitch(),
                 fusion.getAmplitude(),
@@ -151,6 +155,4 @@ public class FusionLogic
                 fusionData.getLevel());
 
     }
-
-
 }

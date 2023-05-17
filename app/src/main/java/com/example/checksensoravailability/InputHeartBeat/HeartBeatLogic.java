@@ -1,30 +1,27 @@
 package com.example.checksensoravailability.InputHeartBeat;
 
 import static android.content.Context.SENSOR_SERVICE;
-
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.os.Bundle;
 import android.util.Log;
-
 import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 import com.example.checksensoravailability.ModalitiesFusion.FusionLogic;
 
 
+/**
+ * Anger Detection
+ * This project is directed by the University of Fribourg in the context of the course FS2023: 03035/33035 Multimodal User Interfaces
+ * Matilde De Luigi / Quentin Nater
+ */
 public class HeartBeatLogic implements SensorEventListener
 {
-
-    protected static final int REQUEST_AUDIO_PERMISSION_CODE = 1;
-
     private static final String TAG = "HeartBeatModality";
-
     private Activity mainActivity;
     private FusionLogic fusionLogic;
     private Fusion fusion;
@@ -64,7 +61,7 @@ public class HeartBeatLogic implements SensorEventListener
      */
     private void checkPermission()
     {
-        // Runtime permission ------------
+        // Check the permission and asked for it if needed
         if (context.checkSelfPermission(Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED)
             mainActivity.requestPermissions(new String[]{Manifest.permission.BODY_SENSORS}, 1);
         else
@@ -80,9 +77,9 @@ public class HeartBeatLogic implements SensorEventListener
     public void onSensorChanged(SensorEvent event)
     {
         if (event.sensor.getType() == Sensor.TYPE_HEART_RATE)
-            fusion.setHeartModality((int) event.values[0]);
+            fusion.setHeartModality((int) event.values[0]);  // set the new heart beat to fusion for handling the sync
 
-        fusionLogic.sensorLogicProcessing();
+        fusionLogic.sensorLogicProcessing();  // handle the new modality
     }
 
     /**
