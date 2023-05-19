@@ -8,8 +8,9 @@ To install and use the application, you will need :
 2) To open a terminal and clone this repository on the desired directory ```git clone https://github.com/qnater/HeartBeatUniFr.git```
 3) To go on ./CheckSensorAvailability/abd and the terminal ```cd ./HeartBeatUniFr/abd```
 4) To run this command ```adb.exe connect IP_ADDRESS_OF_THE_WATCH``` (The IP address can be found in the Wireless menu of the watch >Wireless>Network_Name>IP_Adress)
-5) Once the watch is connected, you can run the MainActivity
-6) Enjoy!
+5) Once the watch is connected, you can click right on the MainActivity > Run
+6) In case of error, please click on "Sync Project with Gradle Files"
+7) Enjoy!
 
 ## Use the application
 To use the application, slide down on the watch in the main menu and click on the "Anger Detection" application. The application is set and ready when the heart beat will be displayed on the screen.
