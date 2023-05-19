@@ -4,13 +4,12 @@
 ## Installation
 To install and use the application, you will need :
 
-1) To install the Android Studio (for instance : Android Studio Electric Eel | 2022.1.1 Patch 2) and have a Samsung Smartwatch (for instance XXXX)
-2) To clone this repository on a directory
-3) To open a terminal
-4) To go on ./CheckSensorAvailability/abd
-5) To run this command ```adb.exe connect IP_ADDRESS_OF_THE_WATCH``` (The IP address can be found in the Wireless menu of the watch)
-6) Once the watch is connected, you can run the MainActivity
-7) Enjoy!
+1) To install the Android Studio (for instance : Android Studio Electric Eel | 2022.1.1 Patch 2) and have a Samsung Smartwatch (for instance Galaxy Watch4 (LC9T))
+2) To open a terminal and clone this repository on the desired directory ```git clone https://github.com/qnater/HeartBeatUniFr.git```
+3) To go on ./CheckSensorAvailability/abd and the terminal ```cd ./CheckSensorAvailability/abd```
+4) To run this command ```adb.exe connect IP_ADDRESS_OF_THE_WATCH``` (The IP address can be found in the Wireless menu of the watch >Wireless>Network_Name>IP_Adress)
+5) Once the watch is connected, you can run the MainActivity
+6) Enjoy!
 
 ## Use the application
 To use the application, slide down on the watch in the main menu and click on the "Anger Detection" application. The application is set and ready when the heart beat will be displayed on the screen.
@@ -29,6 +28,7 @@ By speaking, the user will be able to ask many things to the watch application.
     user command : 
     ```
     Please watch, get the 3 last times I was angry.
+    Please watch, clean the result.
     ```
     
 2) The user can asked to display the last times he/she was angry which a filter by date.
@@ -38,6 +38,7 @@ By speaking, the user will be able to ask many things to the watch application.
     Please watch, display with date when I was angry in the last hour.
     Please watch, display with date when I was angry at 4.
     Please watch, display with date when I was angry yesterday.
+    Please watch, clean the result.
     ```
     
     
@@ -53,7 +54,7 @@ By speaking, the user will be able to ask many things to the watch application.
     
     user command : 
     ```
-    Please watch, take the results of the command and change percentage by pitch.
+    Please watch, take the results of the command and replace percentage by pitch.
     ```
     
     
@@ -103,7 +104,7 @@ Example :
     
    watch:
     ```
-    Result 82 bmps... Do you want to 'continue' or 'terminate' the session ? Do you want to listen 'relaxation music' ?
+    Your results are 82 bmps... Do you want to 'continue' or 'terminate' the session ? Do you want to listen 'relaxation music' ?
     ```
     
     
