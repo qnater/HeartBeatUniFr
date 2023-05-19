@@ -138,8 +138,5 @@ The data can be reached at anytime by the user because it is stored in the datab
 
 ## User guide and demo
 The user guide and demo can be reached from this video : https://youtu.be/Nl9GHz2F3y0
-<iframe width="560" height="315" src="https://youtu.be/Nl9GHz2F3y0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-
-
 
 
