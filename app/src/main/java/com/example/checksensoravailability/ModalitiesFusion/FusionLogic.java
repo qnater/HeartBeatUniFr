@@ -1,8 +1,8 @@
-package com.example.angerdetection.ModalitiesFusion;
+package com.example.checksensoravailability.ModalitiesFusion;
 
-import com.example.angerdetection.ContextUserModelHistory.PersistenceLogic;
-import com.example.angerdetection.InputHeartBeat.HeartBeatData;
-import com.example.angerdetection.InputProsody.ProsodyData;
+import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
+import com.example.checksensoravailability.InputHeartBeat.HeartBeatData;
+import com.example.checksensoravailability.InputProsody.ProsodyData;
 
 /**
  * Anger Detection

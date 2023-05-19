@@ -1,4 +1,4 @@
-package com.example.angerdetection.DialogManagement;
+package com.example.checksensoravailability.DialogManagement;
 
 import java.util.ArrayList;
 

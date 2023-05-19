@@ -1,4 +1,4 @@
-package com.example.angerdetection.InputProsody;
+package com.example.checksensoravailability.InputProsody;
 
 /**
  * Anger Detection

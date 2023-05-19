@@ -1,4 +1,4 @@
-package com.example.angerdetection.DialogManagement;
+package com.example.checksensoravailability.DialogManagement;
 
 import static android.Manifest.permission.RECORD_AUDIO;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
@@ -16,9 +16,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import com.example.angerdetection.ContextUserModelHistory.PersistenceLogic;
-import com.example.angerdetection.ModalitiesFission.Fission;
-import com.example.angerdetection.ModalitiesFission.FissionLogic;
+import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
+import com.example.checksensoravailability.ModalitiesFission.Fission;
+import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

@@ -1,6 +1,6 @@
-package com.example.angerdetection.InputProsody;
+package com.example.checksensoravailability.InputProsody;
 
-import com.example.angerdetection.ModalitiesFusion.Fusion;
+import com.example.checksensoravailability.ModalitiesFusion.Fusion;
 import be.tarsos.dsp.AudioDispatcher;
 import be.tarsos.dsp.AudioEvent;
 import be.tarsos.dsp.AudioProcessor;

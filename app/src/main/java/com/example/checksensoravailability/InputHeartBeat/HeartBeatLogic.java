@@ -1,4 +1,4 @@
-package com.example.angerdetection.InputHeartBeat;
+package com.example.checksensoravailability.InputHeartBeat;
 
 import static android.content.Context.SENSOR_SERVICE;
 import android.Manifest;
@@ -10,8 +10,8 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.util.Log;
-import com.example.angerdetection.ModalitiesFusion.Fusion;
-import com.example.angerdetection.ModalitiesFusion.FusionLogic;
+import com.example.checksensoravailability.ModalitiesFusion.Fusion;
+import com.example.checksensoravailability.ModalitiesFusion.FusionLogic;
 
 
 /**

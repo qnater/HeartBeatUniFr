@@ -1,4 +1,4 @@
-package com.example.angerdetection;
+package com.example.checksensoravailability;
 import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
@@ -14,20 +14,20 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.angerdetection.ContextUserModelHistory.PersistenceLogic;
-import com.example.angerdetection.DialogManagement.DialogData;
-import com.example.angerdetection.DialogManagement.DialogLogic;
-import com.example.angerdetection.Display.ViewHolderAdapter;
-import com.example.angerdetection.InputHeartBeat.HeartBeatData;
-import com.example.angerdetection.InputHeartBeat.HeartBeatLogic;
-import com.example.angerdetection.InputProsody.ProsodyData;
-import com.example.angerdetection.InputProsody.ProsodyLogic;
-import com.example.angerdetection.ModalitiesFission.Fission;
-import com.example.angerdetection.ModalitiesFission.FissionLogic;
-import com.example.angerdetection.ModalitiesFusion.Fusion;
-import com.example.angerdetection.ModalitiesFusion.FusionData;
-import com.example.angerdetection.ModalitiesFusion.FusionLogic;
-import com.example.angerdetection.databinding.ActivityMainBinding;
+import com.example.checksensoravailability.ContextUserModelHistory.PersistenceLogic;
+import com.example.checksensoravailability.DialogManagement.DialogData;
+import com.example.checksensoravailability.DialogManagement.DialogLogic;
+import com.example.checksensoravailability.Display.ViewHolderAdapter;
+import com.example.checksensoravailability.InputHeartBeat.HeartBeatData;
+import com.example.checksensoravailability.InputHeartBeat.HeartBeatLogic;
+import com.example.checksensoravailability.InputProsody.ProsodyData;
+import com.example.checksensoravailability.InputProsody.ProsodyLogic;
+import com.example.checksensoravailability.ModalitiesFission.Fission;
+import com.example.checksensoravailability.ModalitiesFission.FissionLogic;
+import com.example.checksensoravailability.ModalitiesFusion.Fusion;
+import com.example.checksensoravailability.ModalitiesFusion.FusionData;
+import com.example.checksensoravailability.ModalitiesFusion.FusionLogic;
+import com.example.checksensoravailability.databinding.ActivityMainBinding;
 
 import java.io.IOException;
 

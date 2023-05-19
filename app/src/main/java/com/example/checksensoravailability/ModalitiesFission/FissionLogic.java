@@ -1,12 +1,12 @@
-package com.example.angerdetection.ModalitiesFission;
+package com.example.checksensoravailability.ModalitiesFission;
 
 import android.content.Context;
 import android.media.MediaPlayer;
 import android.speech.tts.TextToSpeech;
 import android.widget.Toast;
-import com.example.angerdetection.DialogManagement.DialogLogic;
-import com.example.angerdetection.ModalitiesFusion.Fusion;
-import com.example.angerdetection.R;
+import com.example.checksensoravailability.DialogManagement.DialogLogic;
+import com.example.checksensoravailability.ModalitiesFusion.Fusion;
+import com.example.checksensoravailability.R;
 
 import java.util.Locale;
 
