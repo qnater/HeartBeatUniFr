@@ -1,4 +1,4 @@
-package com.example.angerdetection.ModalitiesFusion;
+package com.example.checksensoravailability.ModalitiesFusion;
 
 /**
  * Anger Detection

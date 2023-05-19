@@ -1,6 +1,6 @@
-package com.example.angerdetection.ModalitiesFusion;
+package com.example.checksensoravailability.ModalitiesFusion;
 
-import com.example.angerdetection.ModalitiesFission.Fission;
+import com.example.checksensoravailability.ModalitiesFission.Fission;
 
 /**
  * Anger Detection

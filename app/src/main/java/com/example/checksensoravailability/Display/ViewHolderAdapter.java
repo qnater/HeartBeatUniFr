@@ -1,9 +1,9 @@
-package com.example.angerdetection.Display;
+package com.example.checksensoravailability.Display;
 
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import androidx.recyclerview.widget.RecyclerView;
-import com.example.angerdetection.databinding.RecyclerviewItemBinding;
+import com.example.checksensoravailability.databinding.RecyclerviewItemBinding;
 
 import java.util.ArrayList;
 
