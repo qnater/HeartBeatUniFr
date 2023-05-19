@@ -8,8 +8,8 @@ To install and use the application, you will need :
 2) To open a terminal and clone this repository on the desired directory ```git clone https://github.com/qnater/HeartBeatUniFr.git```
 3) To go on ./CheckSensorAvailability/abd and the terminal ```cd ./HeartBeatUniFr/abd```
 4) To run this command ```adb.exe connect IP_ADDRESS_OF_THE_WATCH``` (The IP address can be found in the Wireless menu of the watch >Wireless>Network_Name>IP_Adress)
-5) Once the watch is connected, you can click right on the MainActivity > Run
-6) In case of error, please click on "Sync Project with Gradle Files"
+5) Once the watch is connected (you can show in the "Device Manager" tab), you can click right on the MainActivity > Run
+6) In case of error, please click on "Sync Project with Gradle Files" and run again "MainActivity"
 7) Enjoy!
 
 ## Use the application
