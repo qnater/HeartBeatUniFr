@@ -284,7 +284,7 @@ public class MainActivity extends Activity
         else if(fusionData.getLevel().equals("calm")) // Ereshkigal
         {
             if(picState)
-                drawable = getDrawable(R.drawable.relax);
+                drawable = getDrawable(R.drawable.z_relax);
             else
                 drawable = getDrawable(R.drawable.offifical_calmness);
 
@@ -301,7 +301,7 @@ public class MainActivity extends Activity
         else if (fusionData.getLevel().equals("anger"))
         {
             if(picState)
-                drawable = getDrawable(R.drawable.anger);
+                drawable = getDrawable(R.drawable.z_anger);
             else
                 drawable = getDrawable(R.drawable.offifical_anger);
 
@@ -324,7 +324,7 @@ public class MainActivity extends Activity
         else if (fusionData.getLevel().equals("stress"))
         {
             if(picState)
-                drawable = getDrawable(R.drawable.embarassed);
+                drawable = getDrawable(R.drawable.z_stress);
             else
                 drawable = getDrawable(R.drawable.offifical_stress);
 

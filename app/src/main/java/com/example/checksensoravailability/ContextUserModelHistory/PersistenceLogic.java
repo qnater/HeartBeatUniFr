@@ -26,15 +26,19 @@ public class PersistenceLogic
     public PersistenceLogic() throws IOException
     {
         String timestamp = getCurrentTime();
+        System.out.println("Persistance creation : " + timestamp);
 
         // set the unique filename for database
         File extDir = Environment.getExternalStorageDirectory();
-        String filename = timestamp + "-heartbeat_data_set.csv";
+        String filename = "heartbeat_data_set.csv";
         File fullFilename = new File(extDir, filename);
 
-        // handle the creation/deletion of the file
-        fullFilename.delete();
-        fullFilename.createNewFile();
+        // handle the creation of the file
+        if (!fullFilename.exists())
+        {
+            fullFilename.createNewFile();
+        }
+
         fullFilename.setWritable(Boolean.TRUE);
 
         this.fullFilename = fullFilename;
